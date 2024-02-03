@@ -6,8 +6,14 @@ import UploadFlightTicket from "../UploadFlightTicket";
 import PDFViewer from "../PDFViewer";
 
 const getUsers = cache(async () => {
-  const users = await User.find();
-  return users;
+  try {
+    // Increase the timeout value if necessary
+    const users = await User.find().timeout(15000);
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
 });
 
 const Page = async () => {

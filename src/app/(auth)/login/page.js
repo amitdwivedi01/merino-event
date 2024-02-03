@@ -14,8 +14,6 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const router = useRouter();
   const mobileRef = useRef(null);
-  const searchParam = useSearchParams();
-  const role = searchParam.get('role');
   const Router = useRouter();
 
   useEffect(() => {
@@ -96,7 +94,7 @@ const Login = () => {
                   await verifyUserOTP(state?.user, role, otp)
                 }
               /> yeh nhi krna h  */}
-              <VerifyOTPButton user={state?.user} role={role} otp={otp} />
+              <VerifyOTPButton user={state?.user} otp={otp} />
             </div>
           </div>
           {/* <SubmitButton /> */}
@@ -132,7 +130,7 @@ const SendOTPButton = () => {
   );
 };
 
-const VerifyOTPButton = ({ user, role, otp }) => {
+const VerifyOTPButton = ({ user, otp}) => {
   const [pending, setPending] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
   const router = useRouter();
@@ -140,7 +138,7 @@ const VerifyOTPButton = ({ user, role, otp }) => {
   const handleClick = async () => {
     try {
       setPending(true);
-      const result = await verifyUserOTP(user, role, otp);
+      const result = await verifyUserOTP(user, otp);
       setVerificationResult(result);
     } catch (error) {
       console.error('Error verifying OTP:', error);

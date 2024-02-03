@@ -321,9 +321,9 @@ export async function login(prevState, formData) {
   }
 }
 
-export const verifyUserOTP = async (user, role, otp) => {
+export const verifyUserOTP = async (user, otp) => {
   // console.log('got here', user);
-  console.log(user, role, otp);
+
   const checkAndCreateUser = async () => {
     try {
       const verification_check = await verifyOTP({
