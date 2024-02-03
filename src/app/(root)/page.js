@@ -33,9 +33,19 @@ import {
   Utensils
 } from 'lucide-react';
 
-let user = localStorage.getItem('user');
-user = JSON.parse(user);
-console.log(user);
+let user;
+if (typeof window !== 'undefined') {
+  user = localStorage.getItem('user');
+  user = JSON.parse(user);
+  console.log(user);
+  try {
+    let user = localStorage.getItem('user') || '';
+    user = JSON.parse(user);
+    // console.log(user);
+  } catch (error) {
+    console.log('error at user fetching from localstorage', error);
+  }
+}
 
 const roleBaseTime = {
   oem: {
@@ -132,6 +142,7 @@ const itineraries = {
 };
 
 const Modal = ({ isOpen, toggleModal, showModal }) => {
+  const [userState, setUserState] = useState(user);
   return (
     <>
       {isOpen && (
@@ -163,7 +174,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                         <div className="flex flex-col gap-5">
                           <div className="flex flex-col xl:flex-row justify-center gap-1 items-center">
                             <Calendar size={30} />
-                            <p>{user.eventStartDate}</p>
+                            <p>{userState?.eventStartDate}</p>
                           </div>
                           <div className="flex flex-col xl:flex-row justify-center gap-1 items-center">
                             <MapPin size={30} />
@@ -195,7 +206,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                           <div className="">
                             <div className="flex flex-col xl:flex-row gap-1 justify-center items-center">
                               <Calendar size={30} />
-                              <p>{user.eventEndDate}</p>
+                              <p>{userState?.eventEndDate}</p>
                             </div>
                             <div className="flex flex-col xl:flex-row gap-1 justify-center items-center mt-4">
                               <MapPin size={30} />
@@ -231,7 +242,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                         Event Gatepass
                       </h1>
                       <img
-                        src={user.qrCode}
+                        src={userState?.qrCode}
                         alt="Your Image"
                         className="mx-auto mt-5 mb-5"
                       />
@@ -252,7 +263,6 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                         notify you once the tickets are successfully booked.
                         Thank you for your patience.
                       </p>
-                      {/* You can add additional elements or design components here */}
                     </div>
                   </>
                 ) : showModal.Help_Desk ? (
@@ -275,29 +285,13 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                   ''
                 )}
               </div>
-              {/* Image */}
-              {/* <img src={imageUrl} alt="Modal" className="w-full h-auto max-h-screen" /> */}
             </div>
           </div>
-          {/* Overlay */}
-          {/* <div onClick={toggleModal} className="fixed inset-0 bg-gray-800 opacity-50"></div> */}
         </div>
       )}
     </>
   );
 };
-
-// const buttons = [
-//   'Itineraries',
-//   'QR_Code',
-//   'Flight_Ticket'
-// 'Help_Desk'
-// 'Feedback',
-// 'Order_Booking',
-// 'Offers'
-// ];
-
-// const icons = [<SlEvent />, <BsQrCode />, <IoTicketSharp />, <GrContactInfo />];
 
 const Home = () => {
   const Router = useRouter();
@@ -377,17 +371,6 @@ const Home = () => {
       </div>
       <div className="absolute bottom-[50px]">
         <div className="flex w-screen justify-between px-3">
-          {/* {buttons.map((item, index) => (
-          <button
-            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler(item)}
-            key={index}
-          >
-            {icons[index]}
-            <span>{item.split('_').join(' ')}</span>
-          </button>
-        ))} */}
-
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler('Itineraries')}

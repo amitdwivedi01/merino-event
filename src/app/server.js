@@ -219,7 +219,6 @@ export async function updateUserDocuments(prevState, formData) {
   try {
     const user = Object.fromEntries(formData);
     console.log('user:- ', user);
-    // const userData = JSON.parse(user.userDataFromLocalStorage);
 
     await dbConnect();
 
