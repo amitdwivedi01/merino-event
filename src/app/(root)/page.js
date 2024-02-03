@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiPhone, FiMail } from 'react-icons/fi';
 // import fabwoodBookletFolder from "../../public/images/FABWood-Booklet-Folder-ctc.jpg";
 // import fabwoodBookletFolder from "../../public/images/FABWood-Booklet-Folder-ctc.png";
