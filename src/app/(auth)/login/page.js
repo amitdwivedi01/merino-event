@@ -21,10 +21,10 @@ const Login = () => {
   useEffect(() => {
     let userID = localStorage.getItem('user');
     userID = JSON.parse(userID);
-    if(userID?._id){
-      Router.push('/')
+    if (userID?._id) {
+      Router.push('/');
     }
-  },[]);
+  }, []);
   if (state?.success && state?.message === 'find') {
     localStorage.setItem('user', JSON.stringify(state?.data));
     router.push('/sign-up');
@@ -125,7 +125,11 @@ const Login = () => {
 const SendOTPButton = () => {
   const { pending } = useFormStatus();
   return (
-    <button disabled={pending} type="submit" className="btn btn-primary w-full">
+    <button
+      disabled={pending}
+      type="submit"
+      className="btn text-white outline-none w-full bg-[#BF3131]"
+    >
       {pending && <span className="loading loading-spinner loading-md"></span>}
       Login
     </button>
@@ -150,8 +154,12 @@ const VerifyOTPButton = ({ user, role, otp }) => {
   };
 
   useEffect(() => {
-    if (verificationResult && verificationResult.success && verificationResult) {
-      console.log(verificationResult,'verify')
+    if (
+      verificationResult &&
+      verificationResult.success &&
+      verificationResult
+    ) {
+      console.log(verificationResult, 'verify');
       localStorage.setItem('user', JSON.stringify(verificationResult));
       router.push('/sign-up');
     }
@@ -161,7 +169,7 @@ const VerifyOTPButton = ({ user, role, otp }) => {
     <button
       disabled={pending}
       type="button"
-      className="btn btn-primary w-full"
+      className="btn text-white outline-none w-full bg-[#BF3131]"
       onClick={handleClick}
     >
       {pending && <span className="loading loading-spinner loading-md"></span>}

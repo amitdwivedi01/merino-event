@@ -1,59 +1,66 @@
-import ROLE from "@/config/ROLE";
-import mongoose from "mongoose";
-import validator from "validator";
+import ROLE from '@/config/ROLE';
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: true
   },
   email: {
     type: String,
     required: true,
-    unique: [true, "Account already exists"],
-    validate: [validator.isEmail, "Please enter a valid email"],
+    unique: [true, 'Account already exists'],
+    validate: [validator.isEmail, 'Please enter a valid email']
   },
   mobile: {
     type: String,
     required: true,
-    unique: [true, "Account already exists"],
-    validate: [validator.isMobilePhone, "Please enter a valid mobile number"],
+    unique: [true, 'Account already exists'],
+    validate: [validator.isMobilePhone, 'Please enter a valid mobile number']
+  },
+  city: {
+    type: String,
+    require: true
   },
   role: {
-    type: String,
+    type: String
   },
   aadhaar_front: {
-    type: String,
+    type: String
   },
   aadhaar_back: {
-    type: String,
+    type: String
   },
 
   qrCode: {
-    type: String,
+    type: String
   },
-  flightTicket: {
-    type: String,
+  flightTicketToEvent: {
+    type: String
+  },
+  flightTicketToHome: {
+    type: String
   },
   hotelCheckedIn: {
     type: Boolean,
-    default: false,
+    default: false
   },
   eventCheckedIn: {
     type: Boolean,
-    default: false,
+    default: false
   },
   otp: {
     code: Number,
     time: {
       type: Date,
-      default: Date.now,
-    },
+      default: Date.now
+    }
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+export default mongoose.models.User || mongoose.model('User', userSchema);

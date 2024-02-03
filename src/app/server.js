@@ -9,7 +9,7 @@ import QRCode from 'qrcode';
 import nodemailer from 'nodemailer';
 import { clearCookie } from '../../utils/commonUtils';
 import { revalidatePath } from 'next/cache';
-import {v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -80,7 +80,7 @@ const sendMessage = async ({ to, mediaUrl }) => {
     from: `whatsapp:${process.env.ADMIN_WHATSAPP_MOBILE}`,
     body: 'Your entry pass for the launch of the "The Future of Furniture" by "Merino Laminates" is attached.',
     to: `whatsapp:+91${to}`,
-    mediaUrl,
+    mediaUrl
   });
   return res;
 };
@@ -189,13 +189,12 @@ export async function updateUserDeatils(prevState, formData) {
         }
       );
       if (updatedUser) {
-        
         const data = {
           name: updatedUser.name,
           email: updatedUser.email,
           mobile: updatedUser.mobile
         };
-    
+
         return {
           success: true,
           data: data
@@ -263,7 +262,7 @@ export async function updateUserDocuments(prevState, formData) {
           id: updatedUser._id
         })
       );
-      const MediaUrl = await uploadImageAndGetDataURL(qrCode)
+      const MediaUrl = await uploadImageAndGetDataURL(qrCode);
       updatedUser.qrCode = MediaUrl;
       await dbConnect();
       const created_user = await User.create(updatedUser);
