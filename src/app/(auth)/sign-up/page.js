@@ -1,18 +1,15 @@
 'use client';
 
-import { useRef, useState, useEffect, Fragment } from 'react';
-import { sendOTPToUser, verifyUserOTP, updateUserDeatils } from '../../server';
+import { useState, useEffect, Fragment } from 'react';
+import { updateUserDeatils } from '../../server';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
-// import OtpInput from 'react-otp-input';
 import Image from 'next/image';
-// import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Dialog, Transition } from '@headlessui/react';
 
 export default function SignUp() {
-  const [userDataObj, setUserDataObj] = useState(null); // Initialize state to hold user data
-  const [state, formAction] = useFormState(updateUserDeatils); // Update function for form action
+  const [userDataObj, setUserDataObj] = useState(null);
+  const [state, formAction] = useFormState(updateUserDeatils);
   const [formData, setFormData] = useState({});
   const Router = useRouter();
   const [typeOfBtn, setTypeOfBtn] = useState('');
@@ -170,7 +167,8 @@ export default function SignUp() {
                   type="email"
                   required
                   name="email"
-                  value={userDataObj?.email}
+                  value={formData.email || userDataObj?.email}
+                  onChange={handleInputChange}
                   placeholder="Enter your email"
                   className={`input input-bordered w-full`}
                 />
@@ -185,7 +183,8 @@ export default function SignUp() {
                   type="text"
                   required
                   name="companyName"
-                  value={userDataObj?.companyName}
+                  value={formData.companyName || userDataObj?.companyName}
+                  onChange={handleInputChange}
                   placeholder="Enter your company Name"
                   className={`input input-bordered w-full`}
                 />
@@ -200,7 +199,8 @@ export default function SignUp() {
                   type="tel"
                   required
                   name="mobile"
-                  value={userDataObj?.mobile}
+                  value={formData.mobile || userDataObj?.mobile}
+                  onChange={handleInputChange}
                   placeholder="Enter your mobile number"
                   className={`input input-bordered w-full`}
                 />
@@ -215,7 +215,8 @@ export default function SignUp() {
                   type="text"
                   required
                   name="city"
-                  value={userDataObj?.city}
+                  value={formData.city || userDataObj?.city}
+                  onChange={handleInputChange}
                   placeholder="Enter your city"
                   className={`input input-bordered w-full`}
                 />
@@ -235,13 +236,7 @@ export default function SignUp() {
   );
 }
 
-const SubmitButton = ({
-  typeOfBtn,
-  clickFn,
-  isOpen,
-  setIsOpen,
-  setTypeOfBtn
-}) => {
+const SubmitButton = ({ typeOfBtn, setIsOpen }) => {
   const [modalShown, setModalShown] = useState(false);
   const { pending } = useFormStatus();
 
