@@ -130,31 +130,13 @@ export async function sendOTPToUser(prevState, formData) {
     await dbConnect();
     // await User.create(user);
     const existingUser = await User.findOne({ mobile: user?.mobile });
-    // if (existingUser)
-    // throw new Error(
-    //   'Mobile number already registered. Please try with different number'
-    // );
-
-    // const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
-    // const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
-
-    // user.aadhaar_front = `data:${user.aadhaar_front.type};base64,${Buffer.from(
-    //   aadhaar_front_array_buffer
-    // ).toString("base64")}`;
-    // // contentType: user.aadhaar_front.type,
-    // user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(
-    //   aadhaar_back_array_buffer
-    // ).toString("base64")}`;
-
-    // await sendOTP({ mobile: user?.mobile });
-
-    // return {
-    //   success: true,
-    //   message: `OTP sent to your mobile number`,
-    //   user: user
-    // };
-
-    if (existingUser) {
+    if(existingUser.islogin == 'true'){
+      return {
+        success: false,
+        message: 'user',
+        user: existingUser
+      };
+    }else if (existingUser) {
       await sendOTP({ mobile: user?.mobile });
 
       return {
@@ -234,66 +216,53 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
 };
 
 export async function updateUserDocuments(prevState, formData) {
-  const user = Object.fromEntries(formData);
-  const userData = JSON.parse(user.userDataFromLocalStorage);
   try {
-    await dbConnect();
+    const user = Object.fromEntries(formData);
+    const userData = JSON.parse(user.userDataFromLocalStorage);
+
+    await dbConnect(); // Ensure database connection
+
     const existingUser = await User.findOne({ mobile: userData?.mobile });
+
     if (existingUser) {
+      // Process aadhaar_front and aadhaar_back
       const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
       const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
-      user.aadhaar_front = `data:${
-        user.aadhaar_front.type
-      };base64,${Buffer.from(aadhaar_front_array_buffer).toString('base64')}`;
-      user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(
-        aadhaar_back_array_buffer
-      ).toString('base64')}`;
-      const updatedUser = await User.findByIdAndUpdate(
-        existingUser?._id,
-        user,
-        {
-          new: true
-        }
-      );
-      const qrCode = await QRCode.toDataURL(
-        JSON.stringify({
-          name: updatedUser.name,
-          email: updatedUser.email,
-          id: updatedUser._id
-        })
-      );
+
+      user.aadhaar_front = `data:${user.aadhaar_front.type};base64,${Buffer.from(aadhaar_front_array_buffer).toString('base64')}`;
+      user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(aadhaar_back_array_buffer).toString('base64')}`;
+
+      // Update user document
+      const updatedUser = await User.findByIdAndUpdate(existingUser?._id, user, { new: true });
+
+      // Generate QR Code
+      const qrCode = await QRCode.toDataURL(JSON.stringify({ name: updatedUser.name, email: updatedUser.email, id: updatedUser._id }));
       const MediaUrl = await uploadImageAndGetDataURL(qrCode);
       updatedUser.qrCode = MediaUrl;
-      await dbConnect();
-      const created_user = await User.create(updatedUser);
+      updatedUser.islogin = "true";
 
-      const res = await sendMessage({
-        mediaUrl: created_user.qrCode,
-        to: created_user.mobile
-      });
-      if (created_user.email) {
-        sendEmail({
-          to: created_user?.email,
+      // Save updated user
+      await updatedUser.save();
+
+      // Send messages and emails
+      await sendMessage({ mediaUrl: updatedUser.qrCode, to: updatedUser.mobile });
+
+      if (updatedUser.email) {
+        await sendEmail({
+          to: updatedUser.email,
           subject: 'Event QR Code',
-          attachments: [
-            {
-              filename: 'event-pass.png',
-              path: created_user.qrCode
-            }
-          ]
+          attachments: [{ filename: 'event-pass.png', path: updatedUser.qrCode }]
         });
       }
-      return {
-        success: true,
-        data: JSON.stringify(created_user)
-      };
+
+      // Return updated user data
+      return { success: true, data: JSON.stringify(updatedUser) };
+    } else {
+      return { success: false, data: 'User not found' };
     }
-  } catch (e) {
-    console.log({ e });
-    return {
-      success: false,
-      data: error.message
-    };
+  } catch (error) {
+    console.error("Error updating user documents:", error);
+    return { success: false, data: error.message };
   }
 }
 
@@ -302,6 +271,8 @@ export async function login(prevState, formData) {
   try {
     await dbConnect();
     const existingUser = await User.findOne({ mobile: user?.mobile });
+    console.log(existingUser)
+    
     if (existingUser) {
       cookies().set('user', existingUser._id);
       // console.log('Existing: ', existingUser);

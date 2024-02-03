@@ -1,4 +1,5 @@
 'use client';
+
 import { useRef, useState, useEffect } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
@@ -9,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
+// let userID = localStorage.getItem('user');
+//     userID = JSON.parse(userID);
 const Login = () => {
   const [state, formAction] = useFormState(sendOTPToUser);
   const [otp, setOtp] = useState('');
@@ -16,13 +19,13 @@ const Login = () => {
   const mobileRef = useRef(null);
   const Router = useRouter();
 
-  useEffect(() => {
-    let userID = localStorage.getItem('user');
-    userID = JSON.parse(userID);
-    if (userID?._id) {
-      Router.push('/');
-    }
-  }, []);
+  // if (userID?._id) {
+  //   Router.push('/');
+  // }
+  if(state?.message === 'user'){
+    localStorage.setItem('user', JSON.stringify(state?.user));
+    router.push('/')
+  }
   if (state?.success && state?.message === 'find') {
     localStorage.setItem('user', JSON.stringify(state?.data));
     router.push('/sign-up');

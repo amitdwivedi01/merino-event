@@ -27,9 +27,7 @@ export default function SignUp() {
     try {
       const formData = new FormData(event.target);
       formData.append('userDataFromLocalStorage', JSON.stringify(userDataObj));
-
-      const response = await formAction(formData);
-      console.log(state, 'response');
+      formAction(formData);
       if (state?.success) {
         localStorage.setItem('user', state?.data);
         toast.success(

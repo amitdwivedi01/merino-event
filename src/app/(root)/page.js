@@ -33,11 +33,11 @@ import {
   Utensils
 } from 'lucide-react';
 
-if (typeof window !== 'undefined') {
-  let user = localStorage.getItem('user');
-  user = JSON.parse(user);
-  console.log(user);
-}
+
+let user = localStorage.getItem('user');
+user = JSON.parse(user);
+console.log(user);
+
 
 const roleBaseTime = {
   oem: {
@@ -243,7 +243,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                       </p>
                     </div>
                   </>
-                ) : showModal.My_Ticket ? (
+                ) : showModal.Flight_Ticket ? (
                   <>
                     <div className="container flex flex-col max-h-[70vh] w-[80vw] overflow-auto justify-center items-center mx-auto mt-10">
                       <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
@@ -292,7 +292,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
 const buttons = [
   'Event_Itineraries',
   'Event_QR_Code',
-  'My_Ticket',
+  'Flight_Ticket',
   'Help_Desk'
   // 'Feedback',
   // 'Order_Booking',
@@ -308,7 +308,7 @@ const Home = () => {
   const [showModal, setShowModal] = useState({
     Event_Itineraries: false,
     Event_QR_Code: false,
-    My_Ticket: false,
+    Flight_Ticket: false,
     Help_Desk: false,
     E_catalogue: false
   });
