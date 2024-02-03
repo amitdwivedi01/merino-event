@@ -218,7 +218,6 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
 export async function updateUserDocuments(prevState, formData) {
   try {
     const user = Object.fromEntries(formData);
-    console.log('user:- ', user);
 
     await dbConnect();
 
@@ -228,12 +227,20 @@ export async function updateUserDocuments(prevState, formData) {
       const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
       const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
 
-      user.aadhaar_front = `data:${
-        user.aadhaar_front.type
-      };base64,${Buffer.from(aadhaar_front_array_buffer).toString('base64')}`;
-      user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(
-        aadhaar_back_array_buffer
-      ).toString('base64')}`;
+      const aadhaar_front_url = await uploadImageAndGetDataURL(
+        `data:${user.aadhaar_front.type};base64,${Buffer.from(
+          aadhaar_front_array_buffer
+        ).toString('base64')}`
+      );
+
+      const aadhaar_back_url = await uploadImageAndGetDataURL(
+        `data:${user.aadhaar_back.type};base64,${Buffer.from(
+          aadhaar_back_array_buffer
+        ).toString('base64')}`
+      );
+
+      user.aadhaar_front = aadhaar_front_url;
+      user.aadhaar_back = aadhaar_back_url;
 
       const updatedUser = await User.findByIdAndUpdate(
         existingUser?._id,
