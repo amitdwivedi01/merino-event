@@ -22,9 +22,9 @@ const Login = () => {
   // if (userID?._id) {
   //   Router.push('/');
   // }
-  if(state?.message === 'user'){
+  if (state?.message === 'user') {
     localStorage.setItem('user', JSON.stringify(state?.user));
-    router.push('/')
+    router.push('/');
   }
   if (state?.success && state?.message === 'find') {
     localStorage.setItem('user', JSON.stringify(state?.data));
@@ -52,7 +52,7 @@ const Login = () => {
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
         <form action={formAction} className="card-body">
           <div className="relative w-full max-w-sm mx-auto h-[60px] mb-6">
-            <Image fill src="/images/future-furniture-logo.png" />
+            <Image fill src="/images/future-furniture-logo.png" alt="image" />
           </div>
           <div className={state?.success && 'hidden'}>
             <label className="form-control w-full">
@@ -137,7 +137,7 @@ const SendOTPButton = () => {
   );
 };
 
-const VerifyOTPButton = ({ user, otp}) => {
+const VerifyOTPButton = ({ user, otp }) => {
   const [pending, setPending] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
   const router = useRouter();

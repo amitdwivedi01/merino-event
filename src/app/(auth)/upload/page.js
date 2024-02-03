@@ -23,15 +23,17 @@ export default function SignUp() {
     }
   }, []);
 
-  if (state?.success) {
-    toast.success(
-      'Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check in experience',
-      { duration: 4000 }
-    );
-    localStorage.setItem('user', state?.data);
-    setIsLoader(false);
-    Router.push('/');
-  }
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(
+        'Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check in experience',
+        { duration: 4000 }
+      );
+      localStorage.setItem('user', state?.data);
+      setIsLoader(false);
+      Router.push('/');
+    }
+  }, [state]);
 
   const submitHandler = async (event) => {
     setIsLoader(true);
