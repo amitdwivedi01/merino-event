@@ -10,8 +10,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// let userID = localStorage.getItem('user');
-//     userID = JSON.parse(userID);
 const Login = () => {
   const [state, formAction] = useFormState(sendOTPToUser);
   const [otp, setOtp] = useState('');
@@ -19,25 +17,29 @@ const Login = () => {
   const mobileRef = useRef(null);
   const Router = useRouter();
 
-  // if (userID?._id) {
-  //   Router.push('/');
-  // }
   if (state?.message === 'user') {
-    localStorage.setItem('user', JSON.stringify(state?.user));
-    router.push('/');
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('user', JSON.stringify(state?.user));
+        router.push('/');
+      } catch (error) {
+        console.log('Error while changing route to home: ', error);
+      }
+    }
   }
   if (state?.success && state?.message === 'find') {
-    localStorage.setItem('user', JSON.stringify(state?.data));
-    router.push('/sign-up');
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('user', JSON.stringify(state?.data));
+        router.push('/sign-up');
+      } catch (error) {
+        console.log('Error while changing user to signup:- ', error);
+      }
+    }
   }
 
   return (
     <div className="max-w-sm mx-auto p-4">
-      {/* {!state?.success && state?.data && (
-        <div role="alert" className="alert alert-error mb-1">
-          <span>{state?.data}</span>
-        </div>
-      )} */}
       {state?.success && (
         <div role="alert" className="alert alert-success mb-2">
           <span>{state?.message}</span>
@@ -92,36 +94,15 @@ const Login = () => {
                 }}
                 renderInput={(props) => <input {...props} />}
               />
-              {/* <VerifyOTPButton
-                onClick={async () =>
-                  await verifyUserOTP(state?.user, role, otp)
-                }
-              /> yeh nhi krna h  */}
+
               <VerifyOTPButton user={state?.user} otp={otp} />
             </div>
           </div>
-          {/* <SubmitButton /> */}
         </form>
-        {/* <div className="grid place-items-center mb-2">
-          Don't have account?
-          <Link href="/sign-up" className="text-blue-500">
-            Sign-up
-          </Link>
-        </div> */}
       </article>
     </div>
   );
 };
-
-// const SubmitButton = () => {
-//   const { pending } = useFormStatus();
-//   return (
-//     <button disabled={pending} type="submit" className="btn btn-primary w-full">
-//       {pending && <span className="loading loading-spinner loading-md"></span>}
-//       Login
-//     </button>
-//   );
-// };
 
 const SendOTPButton = () => {
   const { pending } = useFormStatus();
@@ -158,9 +139,9 @@ const VerifyOTPButton = ({ user, otp }) => {
     if (
       verificationResult &&
       verificationResult.success &&
-      verificationResult
+      verificationResult &&
+      typeof window !== 'undefined'
     ) {
-      console.log(verificationResult, 'verify');
       localStorage.setItem('user', JSON.stringify(verificationResult));
       router.push('/sign-up');
     }

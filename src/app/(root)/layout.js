@@ -11,10 +11,17 @@ const Layout = ({ children }) => {
   // if (!cookies().has('user')) {
   //   return redirect('/login');
   // }
-  let userID = localStorage.getItem('user');
-  userID = JSON.parse(userID);
-  if (!userID?._id) {
-    Router.push('/login');
+  let userId;
+  if (typeof window !== 'undefined') {
+    try {
+      let userID = localStorage.getItem('user');
+      userID = JSON.parse(userID);
+      if (!userID?._id) {
+        Router.push('/login');
+      }
+    } catch (error) {
+      console.log('error while fetching user from localstorage: ', error);
+    }
   }
   return (
     <div>

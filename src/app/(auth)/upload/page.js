@@ -8,10 +8,8 @@ import { updateUserDocuments } from '../../server'; // Make sure to import the u
 
 export default function SignUp() {
   const Router = useRouter();
-  //   const userDataFromLocalStorage = JSON.parse(localStorage.getItem("user"));
   const [userDataObj, setUserDataObj] = useState(null);
   const [state, formAction] = useFormState(updateUserDocuments, {});
-  // const { pending } = useFormStatus();
   const [isLoader, setIsLoader] = useState(false);
 
   useEffect(() => {
