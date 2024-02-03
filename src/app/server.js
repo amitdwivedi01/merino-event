@@ -130,13 +130,13 @@ export async function sendOTPToUser(prevState, formData) {
     await dbConnect();
     // await User.create(user);
     const existingUser = await User.findOne({ mobile: user?.mobile });
-    if(existingUser.islogin == 'true'){
+    if (existingUser.islogin == 'true') {
       return {
         success: false,
         message: 'user',
         user: existingUser
       };
-    }else if (existingUser) {
+    } else if (existingUser) {
       await sendOTP({ mobile: user?.mobile });
 
       return {
@@ -218,40 +218,58 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
 export async function updateUserDocuments(prevState, formData) {
   try {
     const user = Object.fromEntries(formData);
-    const userData = JSON.parse(user.userDataFromLocalStorage);
+    console.log('user:- ', user);
+    // const userData = JSON.parse(user.userDataFromLocalStorage);
 
-    await dbConnect(); // Ensure database connection
+    await dbConnect();
 
-    const existingUser = await User.findOne({ mobile: userData?.mobile });
+    const existingUser = await User.findOne({ mobile: Number(user?.mobile) });
 
     if (existingUser) {
-      // Process aadhaar_front and aadhaar_back
       const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
       const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
 
-      user.aadhaar_front = `data:${user.aadhaar_front.type};base64,${Buffer.from(aadhaar_front_array_buffer).toString('base64')}`;
-      user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(aadhaar_back_array_buffer).toString('base64')}`;
+      user.aadhaar_front = `data:${
+        user.aadhaar_front.type
+      };base64,${Buffer.from(aadhaar_front_array_buffer).toString('base64')}`;
+      user.aadhaar_back = `data:${user.aadhaar_back.type};base64,${Buffer.from(
+        aadhaar_back_array_buffer
+      ).toString('base64')}`;
 
-      // Update user document
-      const updatedUser = await User.findByIdAndUpdate(existingUser?._id, user, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(
+        existingUser?._id,
+        user,
+        { new: true }
+      );
 
       // Generate QR Code
-      const qrCode = await QRCode.toDataURL(JSON.stringify({ name: updatedUser.name, email: updatedUser.email, id: updatedUser._id }));
+      const qrCode = await QRCode.toDataURL(
+        JSON.stringify({
+          name: updatedUser.name,
+          email: updatedUser.email,
+          id: updatedUser._id
+        })
+      );
       const MediaUrl = await uploadImageAndGetDataURL(qrCode);
       updatedUser.qrCode = MediaUrl;
-      updatedUser.islogin = "true";
+      updatedUser.islogin = 'true';
 
       // Save updated user
       await updatedUser.save();
 
       // Send messages and emails
-      await sendMessage({ mediaUrl: updatedUser.qrCode, to: updatedUser.mobile });
+      await sendMessage({
+        mediaUrl: updatedUser.qrCode,
+        to: updatedUser.mobile
+      });
 
       if (updatedUser.email) {
         await sendEmail({
           to: updatedUser.email,
           subject: 'Event QR Code',
-          attachments: [{ filename: 'event-pass.png', path: updatedUser.qrCode }]
+          attachments: [
+            { filename: 'event-pass.png', path: updatedUser.qrCode }
+          ]
         });
       }
 
@@ -261,7 +279,7 @@ export async function updateUserDocuments(prevState, formData) {
       return { success: false, data: 'User not found' };
     }
   } catch (error) {
-    console.error("Error updating user documents:", error);
+    console.error('Error updating user documents:', error);
     return { success: false, data: error.message };
   }
 }
@@ -271,8 +289,8 @@ export async function login(prevState, formData) {
   try {
     await dbConnect();
     const existingUser = await User.findOne({ mobile: user?.mobile });
-    console.log(existingUser)
-    
+    console.log(existingUser);
+
     if (existingUser) {
       cookies().set('user', existingUser._id);
       // console.log('Existing: ', existingUser);

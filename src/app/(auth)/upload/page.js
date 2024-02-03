@@ -9,8 +9,10 @@ import { updateUserDocuments } from '../../server'; // Make sure to import the u
 export default function SignUp() {
   const Router = useRouter();
   //   const userDataFromLocalStorage = JSON.parse(localStorage.getItem("user"));
-  const [state, formAction] = useFormState(updateUserDocuments);
   const [userDataObj, setUserDataObj] = useState(null);
+  const [state, formAction] = useFormState(updateUserDocuments, {});
+  // const { pending } = useFormStatus();
+  const [isLoader, setIsLoader] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -21,30 +23,32 @@ export default function SignUp() {
     }
   }, []);
 
+  if (state?.success) {
+    toast.success(
+      'Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check in experience',
+      { duration: 4000 }
+    );
+    localStorage.setItem('user', state?.data);
+    setIsLoader(false);
+    Router.push('/');
+  }
+
   const submitHandler = async (event) => {
+    setIsLoader(true);
     event.preventDefault();
 
     try {
       const formData = new FormData(event.target);
-      formData.append('userDataFromLocalStorage', JSON.stringify(userDataObj));
+      formData.append('mobile', userDataObj.mobile);
       formAction(formData);
-      if (state?.success) {
-        localStorage.setItem('user', state?.data);
-        toast.success(
-          'Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check in experience',
-          { duration: 4000 }
-        );
-        Router.push('/');
-      } else {
-        console.error(response.error);
-      }
     } catch (error) {
       console.error('Error updating user documents:', error);
     }
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container relative mx-auto p-8">
+      {/* {isLoader && <></>} */}
       <div role="alert" className="alert alert-success mb-2">
         <span>
           Please provide a valid ID, as it will be used for ticketing and hotel
@@ -59,7 +63,7 @@ export default function SignUp() {
           (aadhar, passport, voterid, driving license)
         </h2>
 
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} /*action={formAction}*/>
           <div className="mb-6">
             <label
               htmlFor="aadhaar_front"
@@ -122,9 +126,13 @@ export default function SignUp() {
             </select>
           </div>
           <button
+            disabled={isLoader}
             type="submit"
             className="btn outline-none w-full bg-[#BF3131] text-white"
           >
+            {isLoader && (
+              <span className="loading loading-spinner loading-md"></span>
+            )}
             Submit
           </button>
         </form>
