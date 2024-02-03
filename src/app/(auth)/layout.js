@@ -7,7 +7,7 @@ export default function RootLayout({ children }) {
   // }
   return (
     <>
-      <div className="bg-hero-home w-[100vw] h-[100vh] bg-no-repeat bg-cover">
+      <div className="bg-hero-home w-[100vw] h-[auto] bg-no-repeat bg-cover">
         <div className="backdrop-brightness-50 backdrop-contrast-100 min-h-screen grid place-items-center">
           {children}
         </div>
