@@ -8,7 +8,7 @@ import PDFViewer from "../PDFViewer";
 const getUsers = cache(async () => {
   try {
     // Increase the timeout value if necessary
-    const users = await User.find().timeout(15000);
+    const users = await User.find().wtimeout(15000);
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -18,6 +18,7 @@ const getUsers = cache(async () => {
 
 const Page = async () => {
   const users = await getUsers();
+  console.log({ users });
   return (
     <div className="container mx-auto">
       <header className="flex justify-between items-center p-4">

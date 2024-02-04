@@ -1,20 +1,20 @@
-'use server';
-import dbConnect from '@/config/db';
-import User from '@/modal/user';
-import Otp from '@/modal/otp';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import TwilioSDK from 'twilio';
-import QRCode from 'qrcode';
-import nodemailer from 'nodemailer';
-import { clearCookie } from '../../utils/commonUtils';
-import { revalidatePath } from 'next/cache';
-import { v2 as cloudinary } from 'cloudinary';
+"use server";
+import dbConnect from "@/config/db";
+import User from "@/modal/user";
+import Otp from "@/modal/otp";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import TwilioSDK from "twilio";
+import QRCode from "qrcode";
+import nodemailer from "nodemailer";
+import { clearCookie } from "../../utils/commonUtils";
+import { revalidatePath } from "next/cache";
+import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET
+  api_secret: process.env.API_SECRET,
 });
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -28,17 +28,17 @@ const client = TwilioSDK(accountSid, authToken);
 export const verifyOTP = async ({ mobile, otpCode }) => {
   await dbConnect();
   const otp = await Otp.findOne({ mobile });
-  if (!otp || !otp.code) throw new Error('Invalid OTP');
+  if (!otp || !otp.code) throw new Error("Invalid OTP");
   const time_diff = (new Date() - new Date(otp.time)) / 1000;
-  if (time_diff > expiredInTime) throw new Error('OTP Expired');
+  if (time_diff > expiredInTime) throw new Error("OTP Expired");
   const isValid = otp.code === otpCode;
   if (isValid) await Otp.findOneAndDelete({ mobile });
   return isValid;
 };
 
 function generateOTP(length = 4) {
-  let digits = '0123456789';
-  let OTP = '';
+  let digits = "0123456789";
+  let OTP = "";
   for (let i = 0; i < length; i++) {
     OTP += digits[Math.floor(Math.random() * 10)];
   }
@@ -51,10 +51,10 @@ const getOTP = async ({ mobile }) => {
     { mobile },
     {
       code,
-      time: new Date()
+      time: new Date(),
     },
     {
-      upsert: true
+      upsert: true,
     }
   );
   return code;
@@ -65,13 +65,13 @@ const sendOTP = async ({ mobile }) => {
   const body = ` Your Key for verification is: ${otp}. Please use it to verify your Merino Fabwood account. Thank you.`;
   await client.messages.create({
     from: process.env.ADMIN_SMS_MOBILE,
-    to: '+91' + mobile,
-    body
+    to: "+91" + mobile,
+    body,
   });
   await client.messages.create({
     from: `whatsapp:${process.env.ADMIN_WHATSAPP_MOBILE}`,
     to: `whatsapp:+91${mobile}`,
-    body
+    body,
   });
 };
 
@@ -80,7 +80,7 @@ const sendMessage = async ({ to, mediaUrl }) => {
     from: `whatsapp:${process.env.ADMIN_WHATSAPP_MOBILE}`,
     body: 'Your entry pass for the launch of the "The Future of Furniture" by "Merino Laminates" is attached.',
     to: `whatsapp:+91${to}`,
-    mediaUrl
+    mediaUrl,
   });
   return res;
 };
@@ -91,8 +91,8 @@ const sendEmail = ({ to, subject, body, attachments }) => {
     service: process.env.ADMIN_EMAIL,
     auth: {
       user: process.env.ADMIN_EMAIL,
-      pass: process.env.ADMIN_EMAIL_PASSWORD
-    }
+      pass: process.env.ADMIN_EMAIL_PASSWORD,
+    },
   });
 
   // Email details
@@ -101,7 +101,7 @@ const sendEmail = ({ to, subject, body, attachments }) => {
     to: to,
     subject: subject,
     body: body,
-    attachments
+    attachments,
   };
 
   // Send email
@@ -111,12 +111,12 @@ const sendEmail = ({ to, subject, body, attachments }) => {
         console.error({ error });
         reject({
           success: false,
-          message: 'Error in sending email'
+          message: "Error in sending email",
         });
       } else {
         resolve({
           success: true,
-          message: info.response
+          message: info.response,
         });
       }
     });
@@ -129,14 +129,14 @@ export async function sendOTPToUser(prevState, formData) {
   try {
     await dbConnect();
     // await User.create(user);
-    
+
     const existingUser = await User.findOne({ mobile: user?.mobile });
-    console.log(existingUser)
-    if (existingUser.islogin == 'true') {
+    console.log(existingUser);
+    if (existingUser.islogin == "true") {
       return {
         success: false,
-        message: 'user',
-        user: existingUser
+        message: "user",
+        user: existingUser,
       };
     } else if (existingUser) {
       await sendOTP({ mobile: user?.mobile });
@@ -144,15 +144,15 @@ export async function sendOTPToUser(prevState, formData) {
       return {
         success: true,
         message: `OTP sent to your mobile number`,
-        user: user
+        user: user,
       };
     }
-    throw new Error('Please enter a register mobile number.');
+    throw new Error("Please enter a register mobile number.");
   } catch (error) {
     console.log({ error });
     return {
       success: false,
-      message: error.toString()
+      message: error.toString(),
     };
   }
 }
@@ -169,37 +169,37 @@ export async function updateUserDeatils(prevState, formData) {
         formData,
         {
           new: true,
-          runValidators: true // Ensure validation rules are enforced
+          runValidators: true, // Ensure validation rules are enforced
         }
       );
       if (updatedUser) {
         const data = {
           name: updatedUser.name,
           email: updatedUser.email,
-          mobile: updatedUser.mobile
+          mobile: updatedUser.mobile,
         };
 
         return {
           success: true,
-          data: data
+          data: data,
         };
       } else {
         return {
           success: false,
-          message: 'Failed to update user details'
+          message: "Failed to update user details",
         };
       }
     } else {
       return {
         success: false,
-        message: 'User not found'
+        message: "User not found",
       };
     }
   } catch (error) {
-    console.error('Error updating user details:', error);
+    console.error("Error updating user details:", error);
     return {
       success: false,
-      message: error.message
+      message: error.message,
     };
   }
 }
@@ -212,7 +212,7 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
     // Return the data URL of the uploaded image
     return uploadedImage.secure_url;
   } catch (error) {
-    console.error('Error uploading image to Cloudinary:', error);
+    console.error("Error uploading image to Cloudinary:", error);
     return null;
   }
 };
@@ -232,13 +232,13 @@ export async function updateUserDocuments(prevState, formData) {
       const aadhaar_front_url = await uploadImageAndGetDataURL(
         `data:${user.aadhaar_front.type};base64,${Buffer.from(
           aadhaar_front_array_buffer
-        ).toString('base64')}`
+        ).toString("base64")}`
       );
 
       const aadhaar_back_url = await uploadImageAndGetDataURL(
         `data:${user.aadhaar_back.type};base64,${Buffer.from(
           aadhaar_back_array_buffer
-        ).toString('base64')}`
+        ).toString("base64")}`
       );
 
       user.aadhaar_front = aadhaar_front_url;
@@ -255,12 +255,12 @@ export async function updateUserDocuments(prevState, formData) {
         JSON.stringify({
           name: updatedUser.name,
           email: updatedUser.email,
-          id: updatedUser._id
+          id: updatedUser._id,
         })
       );
       const MediaUrl = await uploadImageAndGetDataURL(qrCode);
       updatedUser.qrCode = MediaUrl;
-      updatedUser.islogin = 'true';
+      updatedUser.islogin = "true";
 
       // Save updated user
       await updatedUser.save();
@@ -268,26 +268,26 @@ export async function updateUserDocuments(prevState, formData) {
       // Send messages and emails
       await sendMessage({
         mediaUrl: updatedUser.qrCode,
-        to: updatedUser.mobile
+        to: updatedUser.mobile,
       });
 
       if (updatedUser.email) {
         await sendEmail({
           to: updatedUser.email,
-          subject: 'Event QR Code',
+          subject: "Event QR Code",
           attachments: [
-            { filename: 'event-pass.png', path: updatedUser.qrCode }
-          ]
+            { filename: "event-pass.png", path: updatedUser.qrCode },
+          ],
         });
       }
 
       // Return updated user data
       return { success: true, data: JSON.stringify(updatedUser) };
     } else {
-      return { success: false, data: 'User not found' };
+      return { success: false, data: "User not found" };
     }
   } catch (error) {
-    console.error('Error updating user documents:', error);
+    console.error("Error updating user documents:", error);
     return { success: false, data: error.message };
   }
 }
@@ -300,19 +300,19 @@ export async function login(prevState, formData) {
     console.log(existingUser);
 
     if (existingUser) {
-      cookies().set('user', existingUser._id);
+      cookies().set("user", existingUser._id);
       // console.log('Existing: ', existingUser);
       return {
         success: true,
-        data: existingUser
+        data: existingUser,
       };
     }
-    throw new Error('Please enter valid mobile');
+    throw new Error("Please enter valid mobile");
   } catch (error) {
     console.log({ error });
     return {
       success: false,
-      data: error.message
+      data: error.message,
     };
   }
 }
@@ -324,7 +324,7 @@ export const verifyUserOTP = async (user, otp) => {
     try {
       const verification_check = await verifyOTP({
         mobile: user?.mobile,
-        otpCode: otp
+        otpCode: otp,
       });
       if (verification_check) {
         // const qrCode = await QRCode.toDataURL(
@@ -354,21 +354,21 @@ export const verifyUserOTP = async (user, otp) => {
 
         const existingUser = await User.findOne(
           { mobile: user?.mobile },
-          'name email city mobile eventStartDate eventEndDate companyName role -_id'
+          "name email city mobile eventStartDate eventEndDate companyName role -_id"
         );
         if (existingUser) {
           return {
             success: true,
-            data: existingUser
+            data: existingUser,
           };
         }
       }
-      throw new Error('Please enter valid otp');
+      throw new Error("Please enter valid otp");
     } catch (error) {
       console.log({ error });
       return {
         success: false,
-        message: error.toString()
+        message: error.toString(),
       };
     }
   };
@@ -377,9 +377,9 @@ export const verifyUserOTP = async (user, otp) => {
   if (success) {
     const dummy = {
       success: true,
-      message: 'find',
+      message: "find",
       // verifyOTP: true,
-      data: data._doc
+      data: data._doc,
     };
     return dummy;
   }
@@ -387,7 +387,7 @@ export const verifyUserOTP = async (user, otp) => {
 
 export const logoutUser = () => {
   clearCookie();
-  redirect('/login');
+  redirect("/login");
 };
 
 export const updateHotelAndEventCheckInStatus = async (prevData, data) => {
@@ -399,26 +399,26 @@ export const updateHotelAndEventCheckInStatus = async (prevData, data) => {
       if (existingUser[type]) {
         return {
           success: false,
-          message: 'User already Checked-in',
-          data: { name: existingUser.name }
+          message: "User already Checked-in",
+          data: { name: existingUser.name },
         };
       }
       existingUser[type] = true;
       await existingUser.save();
-      revalidatePath('/admin');
+      revalidatePath("/admin");
       return {
         success: true,
-        message: 'Successful',
-        data: { name: existingUser.name }
+        message: "Successful",
+        data: { name: existingUser.name },
       };
     }
-    throw new Error('User not found. Please try again!');
+    throw new Error("User not found. Please try again!");
   } catch (error) {
     console.error({ error });
     return {
       success: false,
       message: error.toString(),
-      data: {}
+      data: {},
     };
   }
 };
@@ -427,36 +427,46 @@ export const uploadFlightTicket = async (prevState, inputData) => {
   try {
     const data = Object.fromEntries(inputData);
 
-    const { id, flightTicket } = data;
-    if (!flightTicket?.name || !flightTicket?.size) {
-      throw new Error('Please select file!');
+    const { id, flightTicketToEvent, flightTicketToHome } = data;
+    if (
+      !flightTicketToEvent?.name ||
+      !flightTicketToEvent?.size ||
+      !flightTicketToHome?.name ||
+      !flightTicketToHome?.size
+    ) {
+      throw new Error("Please select file!");
     }
-    const flightTicketBuffer = await flightTicket.arrayBuffer();
+    const flightTicketToEventBuffer = await flightTicketToEvent.arrayBuffer();
+    const flightTicketToHomeBuffer = await flightTicketToHome.arrayBuffer();
     await dbConnect();
     const user = await User.findById(id);
     if (!user) {
-      throw new Error('Unable to fetch User. Please try again!');
+      throw new Error("Unable to fetch User. Please try again!");
     }
-    user.flightTicket = `data:${flightTicket.type};base64,${Buffer.from(
-      flightTicketBuffer
-    ).toString('base64')}`;
+    user.flightTicketToEvent = `data:${
+      flightTicketToEvent.type
+    };base64,${Buffer.from(flightTicketToEventBuffer).toString("base64")}`;
+
+    user.flightTicketToHome = `data:${
+      flightTicketToHome.type
+    };base64,${Buffer.from(flightTicketToHomeBuffer).toString("base64")}`;
 
     await user.save();
-    revalidatePath('/admin');
+    revalidatePath("/admin");
     return {
       success: true,
-      message: 'Ticket uploaded successfully!'
+      message: "Ticket uploaded successfully!",
     };
   } catch (error) {
     console.error({ error });
     return {
       success: false,
-      message: error.toString()
+      message: error.toString(),
     };
   }
 };
 
-export const getUserById = async (id) => {
+export const getUserById = async (prevState, id) => {
   try {
     await dbConnect();
     const user = await User.findById(id);

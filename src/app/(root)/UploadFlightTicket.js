@@ -37,7 +37,14 @@ const UploadFlightTicket = ({ id }) => {
 
           <h3 className="font-bold text-lg text-center mb-4">FLight Ticker</h3>
           <form action={formAction} className="grid place-items-center gap-4">
-            <input type="file" name="flightTicket" />
+            <label>
+              Ticket to home:
+              <input type="file" name="flightTicketToHome" />
+            </label>
+            <label>
+              Ticket to Event:
+              <input type="file" name="flightTicketToEvent" />
+            </label>
             <input type="hidden" name="id" value={id} />
             <UploadButton />
           </form>

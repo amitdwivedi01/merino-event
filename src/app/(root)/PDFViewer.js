@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-const PDFViewer = ({ url }) => {
+const PDFViewer = ({ url, text }) => {
   const pdfViewer = useRef();
   return (
     <>
@@ -10,7 +10,7 @@ const PDFViewer = ({ url }) => {
         className="btn btn-primary"
         onClick={() => pdfViewer.current.showModal()}
       >
-        View
+        {text ?? "View"}
       </button>
       <dialog ref={pdfViewer} className="modal">
         <div className="modal-box max-w-screen-2xl max-h-screen  h-[90%]">
