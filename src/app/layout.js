@@ -15,7 +15,12 @@ export default function RootLayout({ children }) {
     <html lang="en" data-theme="light">
       <body className={` ${inter.className}`}>
         {/* <Header /> */}
-        <Toaster position="top-center" reverseOrder={false} />
+        <Toaster position="top-center" reverseOrder={false} containerStyle={{
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '1000px',
+        }} />
         {children}
       </body>
     </html>

@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'false'
   },
+  meal: String,
   email: {
     type: String,
     required: true,

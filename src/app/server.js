@@ -129,7 +129,9 @@ export async function sendOTPToUser(prevState, formData) {
   try {
     await dbConnect();
     // await User.create(user);
+    
     const existingUser = await User.findOne({ mobile: user?.mobile });
+    console.log(existingUser)
     if (existingUser.islogin == 'true') {
       return {
         success: false,

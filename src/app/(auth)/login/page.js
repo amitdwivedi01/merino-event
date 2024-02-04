@@ -17,6 +17,17 @@ const Login = () => {
   const mobileRef = useRef(null);
   const Router = useRouter();
 
+  useEffect(()=>{
+      if(typeof window !== 'undefined'){
+       let userID = window.localStorage.getItem('user');
+        userID = JSON.parse(userID);
+        console.log(userID)
+        if (userID?._id) {
+         Router.push('/');
+       }
+      }
+  },[])
+
   if (state?.message === 'user') {
     if (typeof window !== 'undefined') {
       try {
@@ -53,8 +64,8 @@ const Login = () => {
       )}
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
         <form action={formAction} className="card-body">
-          <div className="relative w-full max-w-sm mx-auto h-[60px] mb-6">
-            <Image fill src="/images/future-furniture-logo.png" alt="image" />
+          <div className="relative max-w-sm mx-auto h-[60px] mb-10">
+            <Image fill src="/images/FABWood-logo.png" alt="image" />
           </div>
           <div className={state?.success && 'hidden'}>
             <label className="form-control w-full">

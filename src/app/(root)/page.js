@@ -12,8 +12,9 @@ import { FaUserCircle } from 'react-icons/fa';
 import { MdOutlineFlight } from 'react-icons/md';
 import { BiSupport } from 'react-icons/bi';
 import { GrCatalog } from 'react-icons/gr';
-import merinoLogo from '../../../public/images/merino-logo.png';
+import merinoLogo from '../../../public/images/bg_image1.png';
 import logoImg from '../../../public/images/new_merino.jpg';
+import fabwoodlogo from '../../../public/images/FABWood-logo.png';
 import { useRouter } from 'next/navigation';
 import { Popover } from '@headlessui/react';
 import { toast } from 'react-hot-toast';
@@ -62,7 +63,7 @@ const roleBaseTime = {
   }
 };
 
-const itineraries = {
+const Itinerary = {
   day1: [
     {
       startTime: '12noon',
@@ -164,10 +165,10 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                 </svg>
               </button>
               <div className="p-4 container mx-auto">
-                {showModal.Itineraries ? (
+                {showModal.Itinerary ? (
                   <>
                     <h2 className="my-2 text-3xl font-semibold">
-                      Event Itineraries
+                    Itinerary
                     </h2>
                     <div className="bg-hero-ply rounded-lg shadow-lg max-h-[70vh] w-[80vw] overflow-auto">
                       <div className="rounded-lg grid p-4 xl:p-10 gap-5 divide-y-2 lg:divide-x-2 lg:divide-y-0 lg:grid-cols-2">
@@ -182,7 +183,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                           </div>
                           <div className="self-start">
                             <ul className="timeline max-w-md timeline-snap-icon max-md:timeline-compact timeline-vertical">
-                              {itineraries?.day1?.map((itinerary) => (
+                              {Itinerary?.day1?.map((itinerary) => (
                                 <>
                                   <li className="peer">
                                     <div className="timeline-middle bg-white rounded-full p-1">
@@ -214,7 +215,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                             </div>
                           </div>
                           <ul className="timeline max-w-md timeline-snap-icon max-md:timeline-compact timeline-vertical">
-                            {itineraries?.day2?.map((itinerary) => (
+                            {Itinerary?.day2?.map((itinerary) => (
                               <li className="peer">
                                 <div className="timeline-middle bg-white rounded-full p-1">
                                   <itinerary.icon />
@@ -271,13 +272,19 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                       <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
                         Contact Us
                       </h1>
-                      <div className="flex items-center justify-center mb-4 bg-[#BF3131] p-3 shadow-xl rounded-lg text-white flex items-center justify-center space-x-2 text-lg font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out">
-                        <FiPhone className="w-8 h-8 mr-2" />
-                        <p className="text-lg ">123-456-7890</p>
-                      </div>
-                      <div className="flex items-center justify-center bg-[#BF3131] p-3 shadow-xl rounded-lg text-white flex items-center justify-center space-x-2 text-lg font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out">
-                        <FiMail className="w-8 h-8 mr-2" />
-                        <p className="text-lg ">example@example.com</p>
+                      <h1 className="text-xl font-bold text-center text-gray-600 mb-4">
+                        Contact Time : 10AM - 6PM
+                      </h1>
+                        
+                      <div className="flex flex-col items-center justify-center mb-4 space-y-4">
+                        <a href="tel:+919625567552" className="bg-[#BF3131] p-3 shadow-xl rounded-lg text-white flex items-center justify-center space-x-2 text-lg font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out">
+                          <FiPhone className="w-8 h-8 mr-2" />
+                          <p className="text-lg">+91 9625567552</p>
+                        </a>
+                        <a href="mailto:merinofabwood@gmail.com" className="bg-[#BF3131] p-3 shadow-xl rounded-lg text-white flex items-center justify-center space-x-2 text-lg font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out">
+                          <FiMail className="w-8 h-8 mr-2" />
+                          <p className="text-lg">merinofabwood@gmail.com</p>
+                        </a>
                       </div>
                     </div>
                   </>
@@ -298,7 +305,7 @@ const Home = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isOpen, setisOpen] = useState(false);
   const [showModal, setShowModal] = useState({
-    Itineraries: false,
+    Itinerary: false,
     QR_Code: false,
     Flight_Ticket: false,
     Help_Desk: false,
@@ -373,10 +380,10 @@ const Home = () => {
         <div className="flex w-screen justify-between px-3">
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler('Itineraries')}
+            onClick={() => modalhandler('Itinerary')}
           >
             <SlEvent className="text-3xl" />
-            Itineraries
+            Itinerary
           </button>
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
@@ -414,7 +421,7 @@ const Home = () => {
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
           >
             <GrCatalog className="text-3xl" />
-            E-catlog
+            E-catalog
           </a>
         </div>
       </div>

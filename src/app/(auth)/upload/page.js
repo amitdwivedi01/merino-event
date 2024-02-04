@@ -23,10 +23,16 @@ export default function SignUp() {
 
   useEffect(() => {
     if (state?.success) {
-      toast.success(
-        'Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check in experience',
-        { duration: 4000 }
-      );
+      toast.success('Thank you. Your details have been successfully updated. A QR code has been sent to your mobile and email for a seamless hotel check-in experience', {
+        duration: 4000,
+        style: {
+          // Adjust the styles to center the toast message
+          borderRadius: '14px',
+          background: '#ccc',
+          color: '#000',
+          padding: '16px',
+        },
+      });
       localStorage.setItem('user', state?.data);
       setIsLoader(false);
       Router.push('/');
@@ -57,10 +63,10 @@ export default function SignUp() {
       </div>
       <div className="max-w-md mx-auto bg-white shadow-md rounded-md p-6">
         <h2 className="text-xl font-bold text-center text-red-400">
-          Upload Valid Document Id
+          Upload Valid Photo Id
         </h2>
         <h2 className="text-lg font-bold mb-6 text-center">
-          (aadhar, passport, voterid, driving license)
+          (Aadhar / Passport / VoterId / Driving License)
         </h2>
 
         <form onSubmit={submitHandler} /*action={formAction}*/>
@@ -69,7 +75,7 @@ export default function SignUp() {
               htmlFor="aadhaar_front"
               className="block text-lg font-semibold mb-2"
             >
-              Upload Front of Document ID
+              Upload Front of Photo ID
             </label>
             <input
               type="file"
@@ -83,7 +89,7 @@ export default function SignUp() {
               htmlFor="aadhaar_back"
               className="block text-lg font-semibold mb-2"
             >
-              Upload Back of Document ID
+              Upload Back of Photo ID
             </label>
             <input
               type="file"
@@ -122,6 +128,29 @@ export default function SignUp() {
               </option>
               <option className="text-sm" value="XXL">
                 XXL - 44 cm
+              </option>
+            </select>
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="meal"
+              className="block text-lg font-semibold mb-2"
+            >
+              In-Flight Meal Preference
+            </label>
+            <select
+              id="meal"
+              name="meal"
+              className="py-2 px-4 text-md border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            >
+              <option className="text-sm" value="">
+                Select Meal
+              </option>
+              <option className="text-sm" value="vegetarian">
+              Vegetarian
+              </option>
+              <option className="text-sm" value="non-vegetarian">
+              Non-Vegetarian
               </option>
             </select>
           </div>
