@@ -99,13 +99,13 @@ const Itinerary = {
   day2: [
     {
       startTime: "",
-      endTime: "By 8:00 AM",
+      endTime: "By 08:00 AM",
       session: "Room Check-out & Breakfast",
       icon: CookingPot,
     },
     {
       startTime: "",
-      endTime: "By 8:45 AM",
+      endTime: "By 08:45 AM",
       session: "Departure from Hyatt Place to Merino Halol Plant",
       icon: CarTaxiFront,
     },

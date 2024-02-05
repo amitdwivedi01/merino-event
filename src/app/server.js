@@ -272,7 +272,7 @@ export async function updateUserDocuments(prevState, formData) {
       // });
 
       if (updatedUser.email) {
-        await sendEmail({
+        sendEmail({
           to: updatedUser.email,
           subject: "Event QR Code",
           attachments: [
