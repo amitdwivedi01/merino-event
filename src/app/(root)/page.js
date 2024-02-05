@@ -443,14 +443,14 @@ const Home = () => {
             <SlEvent className="text-3xl" />
             FAQ
           </button> */}
-          <a
+          {/* <a
             href={"/Brochure.pdf"}
             download="your-pdf-file.pdf"
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
           >
             <GrCatalog className="text-3xl" />
             E-catalog
-          </a>
+          </a> */}
         </div>
         {/* <div className="flex w-screen justify-between px-3 mt-2">
           <button
