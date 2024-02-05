@@ -59,7 +59,7 @@ const Login = () => {
       {!state?.success && state?.message && (
         <div role="alert" className="alert alert-error mb-2">
           <ErrorIcon />
-          <span>{state?.message}</span>
+          <span>{"Please Enter Valid Registered Number"}</span>
         </div>
       )}
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
