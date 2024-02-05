@@ -9,7 +9,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'hero-ply': "url('/images/ply.png')",
-        'hero-home': "url('/images/authbg.jpg')",
+        'hero-home': "url('/images/Rev Login Page BG.jpg')",
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'
       }

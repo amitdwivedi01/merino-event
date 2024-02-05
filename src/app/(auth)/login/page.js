@@ -65,7 +65,8 @@ const Login = () => {
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
         <form action={formAction} className="card-body">
           <div className="relative max-w-sm mx-auto h-[60px] mb-10">
-            <Image fill src="/images/FABWood-logo.png" alt="image" />
+            <img className='' src='/images/FABWood-logo.png' alt='logo' />
+            {/* <Image className='' fill src="/images/FABWood-logo.png" alt="image" /> */}
           </div>
           <div className={state?.success && 'hidden'}>
             <label className="form-control w-full">

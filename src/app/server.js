@@ -100,7 +100,7 @@ const sendEmail = ({ to, subject, body, attachments }) => {
     from: process.env.ADMIN_EMAIL,
     to: to,
     subject: subject,
-    body: body,
+    html: body,
     attachments,
   };
 
@@ -266,10 +266,10 @@ export async function updateUserDocuments(prevState, formData) {
       await updatedUser.save();
 
       // Send messages and emails
-      await sendMessage({
-        mediaUrl: updatedUser.qrCode,
-        to: updatedUser.mobile,
-      });
+      // await sendMessage({
+      //   mediaUrl: updatedUser.qrCode,
+      //   to: updatedUser.mobile,
+      // });
 
       if (updatedUser.email) {
         await sendEmail({
@@ -452,6 +452,20 @@ export const uploadFlightTicket = async (prevState, inputData) => {
     };base64,${Buffer.from(flightTicketToHomeBuffer).toString("base64")}`;
 
     await user.save();
+    if (user.email) {
+      await sendEmail({
+        to: user.email,
+        subject: "Flight Tickets Booking Confirmation",
+        body:`
+        <p>Dear Sir/Madam,</p>
+        <p>Your flight tickets have been successfully booked.</p>
+        <p>Please login to our website to review your flights: <a href="https://merinofabwood.vercel.app/login">Review Flights</a></p>
+        <p>Best Regards,<br/>Merino Team</p>`,
+        // attachments: [
+        //   { filename: "event-pass.png", path: user.qrCode },
+        // ],
+      });
+    }
     revalidatePath("/admin");
     return {
       success: true,

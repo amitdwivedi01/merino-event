@@ -9,11 +9,14 @@ import { IoTicketSharp } from "react-icons/io5";
 import { GrContactInfo } from "react-icons/gr";
 import { LuUserCircle2 } from "react-icons/lu";
 import { FaUserCircle } from "react-icons/fa";
+import { VscFeedback } from "react-icons/vsc";
 import { MdOutlineFlight } from "react-icons/md";
+import { TbReorder } from "react-icons/tb";
 import { BiSupport } from "react-icons/bi";
+import { BiSolidOffer } from "react-icons/bi";
 import { GrCatalog } from "react-icons/gr";
 import merinoLogo from "../../../public/images/bg_image1.png";
-import logoImg from "../../../public/images/new_merino.jpg";
+import logoImg from "../../../public/images/Rev Home Page Bg.jpg";
 import fabwoodlogo from "../../../public/images/FABWood-logo.png";
 import { useRouter } from "next/navigation";
 import { Popover } from "@headlessui/react";
@@ -402,7 +405,7 @@ const Home = () => {
         <Image src={logoImg} alt="" className="w-full h-full object-cover" />
       </div>
       <div className="absolute bottom-[50px]">
-        <div className="flex w-screen justify-between px-3">
+        <div className="flex w-screen justify-between px-3 mt-2">
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("Itinerary")}
@@ -425,7 +428,7 @@ const Home = () => {
             Tickets
           </button>
         </div>
-        <div className="flex w-screen justify-between p-3 mt-6">
+        <div className="flex w-screen gap-[1.5rem] p-3 mt-2">
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("Help_Desk")}
@@ -433,13 +436,13 @@ const Home = () => {
             <BiSupport className="text-3xl" />
             Help Desk
           </button>
-          <button
+          {/* <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            /*onClick={() => modalhandler('')}*/
+            onClick={() => modalhandler('')}
           >
             <SlEvent className="text-3xl" />
             FAQ
-          </button>
+          </button> */}
           <a
             href={"/Brochure.pdf"}
             download="your-pdf-file.pdf"
@@ -449,6 +452,29 @@ const Home = () => {
             E-catalog
           </a>
         </div>
+        {/* <div className="flex w-screen justify-between px-3 mt-2">
+          <button
+            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+            onClick={() => modalhandler("Itinerary")}
+          >
+            <BiSolidOffer className="text-[2.5rem]" />
+            Offers
+          </button>
+          <button
+            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+            onClick={() => modalhandler("QR_Code")}
+          >
+            <TbReorder className="text-[2.5rem]" />
+            Ordering
+          </button>
+          <button
+            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+            onClick={() => modalhandler("Flight_Ticket")}
+          >
+            <VscFeedback className="text-[2.5rem]" />
+            Feedback
+          </button>
+        </div> */}
       </div>
     </div>
   );

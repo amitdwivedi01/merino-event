@@ -55,6 +55,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  companyName: String,
   otp: {
     code: Number,
     time: {
