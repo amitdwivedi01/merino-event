@@ -136,8 +136,8 @@ export default function SignUp() {
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
         <div className="card-body">
           <form onSubmit={handleSubmit}>
-            <div className="relative max-w-sm mx-auto h-[60px] mb-14">
-            <img className='' src='/images/FABWood-logo.png' alt='logo' />
+            <div className="relative max-w-sm mx-auto h-[60px] mb-10">
+            <img className='h-[77px] w-[auto]' src='/images/FABWood-logo.png' alt='logo' />
               {/* <Image fill src="/images/FABWood-logo.png" alt="img" /> */}
             </div>
             <div className={state?.success && 'hidden'}>

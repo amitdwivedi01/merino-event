@@ -16,7 +16,7 @@ import { BiSupport } from "react-icons/bi";
 import { BiSolidOffer } from "react-icons/bi";
 import { GrCatalog } from "react-icons/gr";
 import merinoLogo from "../../../public/images/bg_image1.png";
-import logoImg from "../../../public/images/Rev Home Page Bg.jpg";
+import logoImg from "../../../public/images/Rev Home Page Bg (2).jpg";
 import fabwoodlogo from "../../../public/images/FABWood-logo.png";
 import { useRouter } from "next/navigation";
 import { Popover } from "@headlessui/react";
