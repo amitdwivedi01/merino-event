@@ -6,6 +6,9 @@ const nextConfig = {
     },
     api: {
       responseLimit: false,
+      bodyParser: {
+        sizeLimit: '1000mb',
+      },
     },
   },
 };
