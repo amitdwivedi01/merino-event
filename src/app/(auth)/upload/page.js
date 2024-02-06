@@ -103,14 +103,14 @@ export default function SignUp() {
 
           <div className="mb-6">
             <label
-              htmlFor="tshirtSize"
+              htmlFor="tshirt"
               className="block text-lg font-semibold mb-2"
             >
               Select T-shirt Size
             </label>
             <select
-              id="tshirtSize"
-              name="tshirtSize"
+              id="tshirt"
+              name="tshirt"
               required
               className="py-2 px-4 text-md border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
             >

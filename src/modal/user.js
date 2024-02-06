@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   },
   meal: String,
   order: String,
+  tshirt: String,
   email: {
     type: String,
     required: true,
