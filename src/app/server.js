@@ -243,8 +243,6 @@ export async function updateUserDocuments(prevState, formData) {
       );
 
       let aadhaarBackBuffer;
-
-
       user.aadhaar_front = aadhaar_front_url;
       user.aadhaar_back = aadhaar_back_url;
 
