@@ -257,7 +257,7 @@ export async function updateUserDocuments(prevState, formData) {
       const aadhaarFrontBase64 = Buffer.from(aadhaarFrontBuffer).toString('base64');
       const aadhaarBackBase64 = Buffer.from(aadhaarBackBuffer).toString('base64');
     
-      // Upload images and get URLs
+      
       const aadhaarFrontURL = await uploadImageAndGetDataURL(`data:${user.aadhaar_front.type};base64,${aadhaarFrontBase64}`);
       const aadhaarBackURL = await uploadImageAndGetDataURL(`data:${user.aadhaar_back.type};base64,${aadhaarBackBase64}`);
     
