@@ -1,5 +1,6 @@
 "use server";
 import dbConnect from "@/config/db";
+import heicConvert from 'heic-convert';
 import User from "@/modal/user";
 import Otp from "@/modal/otp";
 import { cookies } from "next/headers";
@@ -227,61 +228,70 @@ export async function updateUserDocuments(prevState, formData) {
     const existingUser = await User.findOne({ mobile: Number(user?.mobile) });
 
     if (existingUser) {
-      const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
-      const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
-
-      const aadhaar_front_url = await uploadImageAndGetDataURL(
-        `data:${user.aadhaar_front.type};base64,${Buffer.from(
-          aadhaar_front_array_buffer
-        ).toString("base64")}`
-      );
-
-      const aadhaar_back_url = await uploadImageAndGetDataURL(
-        `data:${user.aadhaar_back.type};base64,${Buffer.from(
-          aadhaar_back_array_buffer
-        ).toString("base64")}`
-      );
-
-      user.aadhaar_front = aadhaar_front_url;
-      user.aadhaar_back = aadhaar_back_url;
-
-      const updatedUser = await User.findByIdAndUpdate(
-        existingUser?._id,
-        user,
-        { new: true }
-      );
-
+      let aadhaarFrontBuffer;
+      let aadhaarBackBuffer;
+    
+      // Check if Aadhaar front image is in HEIC format
+      if (isAadhaarFrontHEIC) {
+        const { buffer } = await heicConvert({
+          buffer: await user.aadhaar_front.arrayBuffer(),
+          format: 'JPEG'
+        });
+        aadhaarFrontBuffer = buffer;
+      } else {
+        aadhaarFrontBuffer = await user.aadhaar_front.arrayBuffer();
+      }
+    
+      // Check if Aadhaar back image is in HEIC format
+      if (isAadhaarBackHEIC) {
+        const { buffer } = await heicConvert({
+          buffer: await user.aadhaar_back.arrayBuffer(),
+          format: 'JPEG'
+        });
+        aadhaarBackBuffer = buffer;
+      } else {
+        aadhaarBackBuffer = await user.aadhaar_back.arrayBuffer();
+      }
+    
+      // Convert buffers to base64 strings
+      const aadhaarFrontBase64 = Buffer.from(aadhaarFrontBuffer).toString('base64');
+      const aadhaarBackBase64 = Buffer.from(aadhaarBackBuffer).toString('base64');
+    
+      // Upload images and get URLs
+      const aadhaarFrontURL = await uploadImageAndGetDataURL(`data:${user.aadhaar_front.type};base64,${aadhaarFrontBase64}`);
+      const aadhaarBackURL = await uploadImageAndGetDataURL(`data:${user.aadhaar_back.type};base64,${aadhaarBackBase64}`);
+    
+      // Update user data with URLs
+      user.aadhaar_front = aadhaarFrontURL;
+      user.aadhaar_back = aadhaarBackURL;
+    
+      // Update user in the database
+      const updatedUser = await User.findByIdAndUpdate(existingUser?._id, user, { new: true });
+    
       // Generate QR Code
-      const qrCode = await QRCode.toDataURL(
-        JSON.stringify({
-          name: updatedUser.name,
-          email: updatedUser.email,
-          id: updatedUser._id,
-        })
-      );
-      const MediaUrl = await uploadImageAndGetDataURL(qrCode);
-      updatedUser.qrCode = MediaUrl;
+      const qrCode = await QRCode.toDataURL(JSON.stringify({
+        name: updatedUser.name,
+        email: updatedUser.email,
+        id: updatedUser._id,
+      }));
+    
+      const qrCodeURL = await uploadImageAndGetDataURL(qrCode);
+    
+      updatedUser.qrCode = qrCodeURL;
       updatedUser.islogin = "true";
-
+    
       // Save updated user
       await updatedUser.save();
-
-      // Send messages and emails
-      // await sendMessage({
-      //   mediaUrl: updatedUser.qrCode,
-      //   to: updatedUser.mobile,
-      // });
-
+    
+      // Send email with event QR Code
       if (updatedUser.email) {
         sendEmail({
           to: updatedUser.email,
           subject: "Event QR Code",
-          attachments: [
-            { filename: "event-pass.png", path: updatedUser.qrCode },
-          ],
+          attachments: [{ filename: "event-pass.png", path: updatedUser.qrCode }],
         });
       }
-
+    
       // Return updated user data
       return { success: true, data: JSON.stringify(updatedUser) };
     } else {
