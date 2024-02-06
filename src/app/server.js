@@ -10,6 +10,7 @@ import nodemailer from "nodemailer";
 import { clearCookie } from "../../utils/commonUtils";
 import { revalidatePath } from "next/cache";
 import { v2 as cloudinary } from "cloudinary";
+import bodyParser from 'body-parser';
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
