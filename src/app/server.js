@@ -220,15 +220,18 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
 
 export async function updateUserDocuments(prevState, formData) {
   try {
+    console.log('hitt')
     const user = Object.fromEntries(formData);
+
+    console.log(user,'hitt')
 
     await dbConnect();
 
     const existingUser = await User.findOne({ mobile: Number(user?.mobile) });
-
     if (existingUser) {
       const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
       const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
+      console.log(aadhaar_front_array_buffer, aadhaar_back_array_buffer, "buffer")
 
       const aadhaar_front_url = await uploadImageAndGetDataURL(
         `data:${user.aadhaar_front.type};base64,${Buffer.from(
@@ -241,6 +244,8 @@ export async function updateUserDocuments(prevState, formData) {
           aadhaar_back_array_buffer
         ).toString("base64")}`
       );
+
+      console.log(aadhaar_front_url, aadhaar_back_url,'cloudinary response')
 
       let aadhaarBackBuffer;
       user.aadhaar_front = aadhaar_front_url;
