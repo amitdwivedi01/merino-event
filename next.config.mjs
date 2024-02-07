@@ -5,7 +5,7 @@ const nextConfig = {
       bodySizeLimit: "1000mb",
     },
     api: {
-      responseLimit: false,
+      responseLimit: '1000mb',
       bodyParser: {
         sizeLimit: '1000mb',
       },

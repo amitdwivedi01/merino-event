@@ -17,11 +17,12 @@ const Page = ({}) => {
     window.location.reload();
   };
 
+  console.log(userInfo,'userInfo')
   useEffect(() => {
-    if (userInfo?.email) {
+    if (userInfo?.id) {
       updateAction({ user: userInfo, type });
     }
-  }, [userInfo?.email]);
+  }, [userInfo?.id]);
 
   return (
     <div className="w-dvw h-dvh grid place-items-center">

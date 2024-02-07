@@ -1,24 +1,25 @@
-import User from "@/modal/user";
+"use client"
+
+import {useState,useEffect} from "react"
+import { getUsers } from "@/app/server";
 import { Scan } from "lucide-react";
 import Link from "next/link";
 import { cache } from "react";
 import UploadFlightTicket from "../UploadFlightTicket";
 import PDFViewer from "../PDFViewer";
 
-const getUsers = cache(async () => {
-  try {
-    // Increase the timeout value if necessary
-    const users = await User.find().wtimeout(15000);
-    return users;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return [];
-  }
-});
 
-const Page = async () => {
-  const users = await getUsers();
-  console.log({ users });
+const Page =  () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const limitedUsers = await getUsers()
+      setUsers(limitedUsers)
+    }
+    fetchUsers();
+  }, []);
+ 
   return (
     <div className="container mx-auto">
       <header className="flex justify-between items-center p-4">
@@ -46,8 +47,8 @@ const Page = async () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
-                <th>Aadhaar Front</th>
-                <th>Aadhaar Back</th>
+                <th>Meal</th>
+                <th>T-shirt</th>
                 <th>Hotel</th>
                 <th>Event</th>
                 <th>Flight Ticket</th>
@@ -61,12 +62,8 @@ const Page = async () => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.mobile}</td>
-                  <td>
-                    <PDFViewer url={user.aadhaar_front} />
-                  </td>
-                  <td>
-                    <PDFViewer url={user.aadhaar_back} />
-                  </td>
+                  <td>{user.meal}</td>
+                  <td>{user.tshirt}</td>                  
                   <td>
                     {user.hotelCheckedIn ? (
                       <span className=" text-green-500">Checked-in</span>

@@ -219,6 +219,7 @@ const uploadImageAndGetDataURL = async (imageBase64) => {
 };
 
 export async function updateUserDocuments(prevState, formData) {
+  console.log("this is triggered");
   try {
     const user = Object.fromEntries(formData);
 
@@ -226,25 +227,20 @@ export async function updateUserDocuments(prevState, formData) {
 
     const existingUser = await User.findOne({ mobile: Number(user?.mobile) });
     if (existingUser) {
-      const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
-      const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
+      // const aadhaar_front_array_buffer = await user.aadhaar_front.arrayBuffer();
+      // const aadhaar_back_array_buffer = await user.aadhaar_back.arrayBuffer();
 
-      const aadhaar_front_url = await uploadImageAndGetDataURL(
-        `data:${user.aadhaar_front.type};base64,${Buffer.from(
-          aadhaar_front_array_buffer
-        ).toString("base64")}`
-      );
+      // const aadhaar_front_url = await uploadImageAndGetDataURL(
+      //   `data:${user.aadhaar_front.type};base64,${Buffer.from(
+      //     aadhaar_front_array_buffer
+      //   ).toString("base64")}`
+      // );
 
-      const aadhaar_back_url = await uploadImageAndGetDataURL(
-        `data:${user.aadhaar_back.type};base64,${Buffer.from(
-          aadhaar_back_array_buffer
-        ).toString("base64")}`
-      );
-
-      let aadhaarBackBuffer;
-      user.aadhaar_front = aadhaar_front_url;
-      user.aadhaar_back = aadhaar_back_url;
-
+      // const aadhaar_back_url = await uploadImageAndGetDataURL(
+      //   `data:${user.aadhaar_back.type};base64,${Buffer.from(
+      //     aadhaar_back_array_buffer
+      //   ).toString("base64")}`
+      // );
       const updatedUser = await User.findByIdAndUpdate(
         existingUser?._id,
         user,
@@ -265,13 +261,6 @@ export async function updateUserDocuments(prevState, formData) {
 
       // Save updated user
       await updatedUser.save();
-
-      // Send messages and emails
-      // await sendMessage({
-      //   mediaUrl: updatedUser.qrCode,
-      //   to: updatedUser.mobile,
-      // });
-
       if (updatedUser.email) {
         sendEmail({
           to: updatedUser.email,
@@ -395,7 +384,8 @@ export const updateHotelAndEventCheckInStatus = async (prevData, data) => {
   try {
     const { user, type } = data;
     await dbConnect();
-    const existingUser = await User.findOne({ email: user?.email });
+    const existingUser = await User.findById(user?.id);
+    console.log(existingUser,"user")
     if (existingUser) {
       if (existingUser[type]) {
         return {
@@ -480,13 +470,24 @@ export const uploadFlightTicket = async (prevState, inputData) => {
     };
   }
 };
-
+/**@param {FormData} formData */
 export const getUserById = async (prevState, id) => {
-  try {
+  try {   
     await dbConnect();
     const user = await User.findById(id);
+    console.log(user,"user")
     return user;
   } catch (error) {
     console.log({ error });
   }
 };
+export const getUsers = async () => {
+  try {
+    // Increase the timeout value if necessary
+    const users = await User.find().select('name email tshirt meal mobile _id eventCheckedIn hotelCheckedIn');
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+}

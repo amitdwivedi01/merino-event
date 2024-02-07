@@ -150,10 +150,15 @@ const Itinerary = {
 
 const Modal = ({ isOpen, toggleModal, showModal }) => {
   const [userState, setUserState] = useState(user);
+  // console.log(user?._id)
   const [state, formAction] = useFormState(getUserById);
-  useEffect(() => {
+  console.log(state)
+  useEffect( () => {
     console.log({ id: user?._id });
     formAction(user?._id);
+    // const response = await getUserById(user?._id);
+    // console.log(response);
+    // setUserState(response)
   }, []);
   return (
     <>
@@ -268,16 +273,32 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                       <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
                         Flight Tickets
                       </h1>
-                      {state?.flightTicket ? (
+                      {state?.flightTicketToHome ? (
                         <div className="grid gap-4">
-                          <PDFViewer
-                            url={state.flightTicketToHome}
-                            text="Ticket to Home"
-                          />
-                          <PDFViewer
-                            url={state.flightTicketToEvent}
-                            text="Ticket to Event"
-                          />
+                          <div className="flex gap-4 justify-end items-center">
+                            <h1 className="text-xl font-bold text-center text-gray-900">
+                            Flight To Event
+                            </h1>
+                            <a
+                              href={state?.flightTicketToEvent}
+                              download="your-pdf-file.pdf"
+                              className="bg-[#BF3131] py-4 px-3 shadow-xl rounded-md text-white font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+                            >
+                                Download Ticket</a>
+                          </div>
+                          <div className="flex gap-4 justify-end items-center">
+                                <h1 className="text-xl font-bold text-center text-gray-900">
+                              Flight To Home
+                              </h1>
+                            <a
+                              href={state?.flightTicketToHome}
+                              download="your-pdf-file.pdf"
+                              className="bg-[#BF3131] py-4 px-3 shadow-xl rounded-md text-white font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+                                >
+                                  
+                                  Download Ticket</a>
+                          </div>
+                          
                         </div>
                       ) : (
                         <p className="text-lg text-gray-700 mb-8 max-w-md text-center">

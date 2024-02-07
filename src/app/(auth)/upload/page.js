@@ -8,6 +8,9 @@ import { updateUserDocuments } from '../../server'; // Make sure to import the u
 
 export default function SignUp() {
   const Router = useRouter();
+  const [frontImageUrl, setFrontImageUrl] = useState('');
+  const [backImageUrl, setBackImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [userDataObj, setUserDataObj] = useState(null);
   const [state, formAction] = useFormState(updateUserDocuments, {});
   const [isLoader, setIsLoader] = useState(false);
@@ -39,16 +42,40 @@ export default function SignUp() {
     }
   }, [state]);
 
+  const handleFileUpload = async (file, setImageUrl) => {
+    // const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'jksuem3q');
+
+    try {
+      const response = await fetch('https://api.cloudinary.com/v1_1/depzzdss5/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      return data.secure_url
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+
   const submitHandler = async (event) => {
     setIsLoader(true);
     event.preventDefault();
-
     try {
       const formData = new FormData(event.target);
       formData.append('mobile', userDataObj.mobile);
+      const aadhaar_frontUrl = await handleFileUpload(formData.get("aadhaar_front"))
+      const aadhaar_backUrl = await handleFileUpload(formData.get("aadhaar_back")) 
+      formData.append('aadhaar_front', aadhaar_frontUrl);
+      formData.append('aadhaar_back', aadhaar_backUrl);
+      
       formAction(formData);
     } catch (error) {
       console.error('Error updating user documents:', error);
+      setIsLoader(false)
+
     }
   };
 
@@ -81,7 +108,7 @@ export default function SignUp() {
               type="file"
               id="aadhaar_front"
               required
-              name="aadhaar_front"
+              name = "aadhaar_front"              
               className="block w-full py-2 px-4 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -95,7 +122,7 @@ export default function SignUp() {
             <input
               type="file"
               id="aadhaar_back"
-              name="aadhaar_back"
+              name = "aadhaar_back"
               required
               className="block w-full py-2 px-4 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
             />
