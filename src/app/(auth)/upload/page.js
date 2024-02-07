@@ -68,8 +68,8 @@ export default function SignUp() {
       formData.append('mobile', userDataObj.mobile);
       const aadhaar_frontUrl = await handleFileUpload(formData.get("aadhaar_front"))
       const aadhaar_backUrl = await handleFileUpload(formData.get("aadhaar_back")) 
-      formData.append('aadhaar_front', aadhaar_frontUrl);
-      formData.append('aadhaar_back', aadhaar_backUrl);
+      formData.set('aadhaar_front', aadhaar_frontUrl);
+      formData.set('aadhaar_back', aadhaar_backUrl);
       
       formAction(formData);
     } catch (error) {
