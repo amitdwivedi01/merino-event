@@ -4,7 +4,7 @@ import {useState,useEffect,useRef} from "react"
 import { getUsers } from "@/app/server";
 import { Scan } from "lucide-react";
 import Link from "next/link";
-import { useDownloadExcel } from 'react-export-table-to-excel';
+// import { useDownloadExcel } from 'react-export-table-to-excel';
 import { cache } from "react";
 import UploadFlightTicket from "../UploadFlightTicket";
 import PDFViewer from "../PDFViewer";
@@ -12,13 +12,13 @@ import PDFViewer from "../PDFViewer";
 
 const Page =  () => {
   const [users, setUsers] = useState([]);
-  const tableRef = useRef(null);
+//   const tableRef = useRef(null);
 
-  const { onDownload } = useDownloadExcel({
-    currentTableRef: tableRef.current,
-    filename: 'Users table',
-    sheet: 'Users'
-})
+//   const { onDownload } = useDownloadExcel({
+//     currentTableRef: tableRef.current,
+//     filename: 'Users table',
+//     sheet: 'Users'
+// })
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -49,7 +49,7 @@ const Page =  () => {
       </header>
       <div className="mt-4">
         <div className="overflow-x-auto">
-          <table className="table" ref={tableRef}>
+          <table className="table" >
             {/* head */}
             <thead>
               <tr>
