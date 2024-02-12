@@ -44,7 +44,7 @@ const Page =  () => {
             </button>
           </Link>
 
-          <button onClick={onDownload} className="btn btn-outline"> Export excel </button>
+          {/* <button onClick={onDownload} className="btn btn-outline"> Export excel </button> */}
         </div>
       </header>
       <div className="mt-4">
