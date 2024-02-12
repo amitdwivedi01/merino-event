@@ -55,16 +55,6 @@ if (typeof window !== "undefined") {
   }
 }
 
-const currentDate = new Date();
-
-// Extract the day and month from the current date
-const currentDay = currentDate.getDate();
-const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month
-
-// Check if the current date is 13th of February or later
-const isAfterFeb13 = currentMonth === 2 && currentDay >= +user?.eventStartDate.slice(0,2);
-
-
 
 const roleBaseTime = {
   oem: {
@@ -755,6 +745,8 @@ const Home = () => {
   const Router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const [isOpen, setisOpen] = useState(false);
+  const [userData, setUserData] = useState(user);
+  const [isAfterFeb13, setIsAfterFeb13] = useState(false)
   const [showModal, setShowModal] = useState({
     Itinerary: false,
     QR_Code: false,
@@ -765,6 +757,20 @@ const Home = () => {
     Offers: false,
     feedback: false,
   });
+
+  useEffect(()=>{
+    const currentDate = new Date();
+    
+    // Extract the day and month from the current date
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month
+    
+    // Check if the current date is 13th of February or later
+    const date = currentMonth === 2 && currentDay >= +userData?.eventStartDate.slice(0,2);
+    if(date){
+      setIsAfterFeb13(true)
+    }
+  },[])
 
   const modalhandler = (item) => {
     setisOpen(true);
@@ -863,7 +869,7 @@ const Home = () => {
           >
             <VscFeedback className="text-[2.5rem]" />
             Feedback
-          </button> : ''
+          </button> : ('')
           }
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
@@ -881,7 +887,7 @@ const Home = () => {
           >
             <GrCatalog className="text-3xl" />
             E-catalog
-          </a> : ''
+          </a> : ( '')
           }
         </div>
         {/* <div className="flex w-screen justify-between px-3 mt-2">
