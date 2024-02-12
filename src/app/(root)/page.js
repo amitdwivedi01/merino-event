@@ -769,6 +769,8 @@ const Home = () => {
     const date = currentMonth === 2 && currentDay >= +userData?.eventStartDate.slice(0,2);
     if(date){
       setIsAfterFeb13(true)
+    }else{
+      setIsAfterFeb13(false)
     }
   },[])
 
