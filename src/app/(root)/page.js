@@ -17,10 +17,11 @@ import { BiSolidOffer } from "react-icons/bi";
 import { GrCatalog } from "react-icons/gr";
 import merinoLogo from "../../../public/images/bg_image1.png";
 import logoImg from "../../../public/images/Rev Home Page Bg (2).jpg";
-import fabwoodlogo from "../../../public/images/FABWood-logo.png";
+import logo from "../../../public/images/merino-logo.png";
 import { useRouter } from "next/navigation";
 import { Popover } from "@headlessui/react";
 import { toast } from "react-hot-toast";
+import { addFeedback, addOrder } from "../server";
 import {
   Calendar,
   CarTaxiFront,
@@ -53,6 +54,17 @@ if (typeof window !== "undefined") {
     console.log("error at user fetching from localstorage", error);
   }
 }
+
+const currentDate = new Date();
+
+// Extract the day and month from the current date
+const currentDay = currentDate.getDate();
+const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month
+
+// Check if the current date is 13th of February or later
+const isAfterFeb13 = currentMonth === 2 && currentDay >= +user?.eventStartDate.slice(0,2);
+
+
 
 const roleBaseTime = {
   oem: {
@@ -150,10 +162,145 @@ const Itinerary = {
 
 const Modal = ({ isOpen, toggleModal, showModal }) => {
   const [userState, setUserState] = useState(user);
+  const [selectedBoard, setSelectedBoard] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [isLoader, setIsLoader] = useState(false);
+  const [images, setImages] = useState({
+    image1: "",
+    image2: "",
+    image3: "",
+    image4: "",
+    image5: "",
+  });
+  const [previewImages, setPreviewImages] = useState([]);
   // console.log(user?._id)
   const [state, formAction] = useFormState(getUserById);
-  console.log(state)
-  useEffect( () => {
+
+  const handleRatingChange = (event) => {
+    setRating(event.target.value);
+  };
+
+  const handleReviewChange = (event) => {
+    setReview(event.target.value);
+  };
+
+  const handleFileUpload = async (file, setImageUrl) => {
+    // const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "jksuem3q");
+
+    try {
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/depzzdss5/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const { name } = event.target;
+    const selectedImage = event.target.files[0]; // Assuming only one file is selected
+
+    setImages((prevImages) => ({
+      ...prevImages,
+      [name]: selectedImage,
+    }));
+  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    // Your submission logic goes here
+    setIsLoader(true);
+    const formData = new FormData();
+    // Append the rating, review, and other data to the FormData object
+    formData.append("Rating", rating);
+    formData.append("Review", review);
+    if (images.image1) {
+      const Image1Url = await handleFileUpload(images.image1);
+      formData.append("image1", Image1Url);
+    }
+    if (images.image2) {
+      const Image2Url = await handleFileUpload(images.image2);
+      formData.append("image2", Image2Url);
+    }
+    if (images.image3) {
+      const Image3Url = await handleFileUpload(images.image3);
+      formData.append("image3", Image3Url);
+    }
+
+    formData.append("name", userState.name);
+    formData.append("email", userState.email);
+    formData.append("mobile", userState.mobile);
+    formData.append("id", userState._id);
+
+    const response = await addFeedback(formData);
+    if (response?.success) {
+      toast.success(
+        "Thank you. Your Feedback have been successfully updated.",
+        {
+          duration: 4000,
+        }
+      );
+      setIsLoader(false);
+      setRating("");
+      setReview("");
+      setImages({
+        image1: "",
+        image2: "",
+        image3: "",
+        image4: "",
+        image5: "",
+      });
+    } else {
+      toast.error("Please try again, some internal problem arises");
+    }
+  };
+
+  //ordering
+  const handleBoardSelect = (boardNumber) => {
+    setSelectedBoard(boardNumber);
+    setModalOpen(true);
+  };
+
+  const handleAgreeTerms = async() => {
+    setAgreeTerms(true);
+    const formData = new FormData();
+    formData.append("Order", selectedBoard)
+    formData.append("id", userState._id)
+    const response = await addOrder(formData);
+    if(response.success){
+      toast.success(
+        "Thank you. Your Order is Placed.",
+        {
+          duration: 4000,
+        }
+      );
+    }else{
+        toast.error("Please Try Again, Some error occurred!",
+          {
+            duration:4000,
+          }
+        );
+      }
+    setModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedBoard(null);
+  };
+
+  useEffect(() => {
     console.log({ id: user?._id });
     formAction(user?._id);
     // const response = await getUserById(user?._id);
@@ -277,28 +424,28 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                         <div className="grid gap-4">
                           <div className="flex gap-4 justify-end items-center">
                             <h1 className="text-xl font-bold text-center text-gray-900">
-                            Flight To Event
+                              Flight To Event
                             </h1>
                             <a
                               href={state?.flightTicketToEvent}
                               download="your-pdf-file.pdf"
                               className="bg-[#BF3131] py-4 px-3 shadow-xl rounded-md text-white font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
                             >
-                                Download Ticket</a>
+                              Download Ticket
+                            </a>
                           </div>
                           <div className="flex gap-4 justify-end items-center">
-                                <h1 className="text-xl font-bold text-center text-gray-900">
+                            <h1 className="text-xl font-bold text-center text-gray-900">
                               Flight To Home
-                              </h1>
+                            </h1>
                             <a
                               href={state?.flightTicketToHome}
                               download="your-pdf-file.pdf"
                               className="bg-[#BF3131] py-4 px-3 shadow-xl rounded-md text-white font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-                                >
-                                  
-                                  Download Ticket</a>
+                            >
+                              Download Ticket
+                            </a>
                           </div>
-                          
                         </div>
                       ) : (
                         <p className="text-lg text-gray-700 mb-8 max-w-md text-center">
@@ -337,6 +484,261 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                       </div>
                     </div>
                   </>
+                ) : showModal.Offers ? (
+                  <div className="flex justify-center">
+                    <div className="border border-gray-300 rounded-lg p-6 max-w-xs">
+                      <h2 className="text-3xl font-bold mb-8 text-center">
+                        Special Offers
+                      </h2>
+                      <Image src={logo} alt="Offer" className="mx-auto mb-4" />
+                    </div>
+                  </div>
+                ) : showModal.feedback ? (
+                  <>
+                    <div className="container mx-auto">
+                      <div className="max-w-lg mx-auto">
+                        <div className="bg-white p-8 rounded-lg shadow-md">
+                          <h2 className="text-3xl font-bold mb-4 text-center">
+                            Event Feedback Form
+                          </h2>
+                          <div className="mb-4">
+                            <label className="block text-xl text-gray-700 font-bold mb-2">
+                              Overall Experience:
+                            </label>
+                            <div>
+                              <label className="inline-flex items-center mr-4">
+                                <input
+                                  type="radio"
+                                  value="Poor"
+                                  checked={rating === "Poor"}
+                                  onChange={handleRatingChange}
+                                  className="form-radio text-red-500"
+                                />
+                                <span className="ml-2 text-lg">Poor</span>
+                              </label>
+                              <label className="inline-flex items-center mr-4">
+                                <input
+                                  type="radio"
+                                  value="Good"
+                                  checked={rating === "Good"}
+                                  onChange={handleRatingChange}
+                                  className="form-radio text-red-500"
+                                />
+                                <span className="ml-2 text-lg">Good</span>
+                              </label>
+                              <label className="inline-flex items-center mr-4">
+                                <input
+                                  type="radio"
+                                  value="Very Good"
+                                  checked={rating === "Very Good"}
+                                  onChange={handleRatingChange}
+                                  className="form-radio text-red-500"
+                                />
+                                <span className="ml-2 text-lg">Very Good</span>
+                              </label>
+                              <label className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  value="Excellent"
+                                  checked={rating === "Excellent"}
+                                  onChange={handleRatingChange}
+                                  className="form-radio text-red-500"
+                                />
+                                <span className="ml-2 text-lg">Excellent</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="review"
+                              className="block text-gray-700 font-bold text-xl mb-2"
+                            >
+                              Review:
+                            </label>
+                            <textarea
+                              id="review"
+                              value={review}
+                              onChange={handleReviewChange}
+                              className="resize-none block w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              rows="5"
+                            ></textarea>
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="images"
+                              className="block text-gray-700 text-xl font-bold mb-2"
+                            >
+                              Upload Images:
+                            </label>
+                            <div className="flex">
+                              <input
+                                type="file"
+                                id="images"
+                                accept="image/*"
+                                name="image1"
+                                onChange={handleImageChange}
+                                className="block w-full"
+                              />
+                            </div>
+                            <div className="flex flex-wrap -mx-2">
+                              <div className="w-1/3 px-2 mb-4">
+                                {/* {
+                                      images.image1 ?
+                                      <img
+                                        src={images?.image1}
+                                        alt={`Preview `}
+                                        className="w-full h-auto rounded-lg shadow-md"
+                                      /> : ''
+                                    } */}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <div className="flex">
+                              <input
+                                type="file"
+                                id="images"
+                                accept="image/*"
+                                name="image2"
+                                onChange={handleImageChange}
+                                className="block w-full"
+                              />
+                            </div>
+                            <div className="flex flex-wrap -mx-2">
+                              <div className="w-1/3 px-2 mb-4">
+                                {/* {
+                                      images.image2 ?
+                                      <img
+                                        src={images?.image2}
+                                        alt={`Preview `}
+                                        className="w-full h-auto rounded-lg shadow-md"
+                                      /> : ''
+                                    } */}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <div className="flex">
+                              <input
+                                type="file"
+                                id="images"
+                                accept="image/*"
+                                name="image3"
+                                onChange={handleImageChange}
+                                className="block w-full"
+                              />
+                            </div>
+                            <div className="flex flex-wrap -mx-2">
+                              <div className="w-1/3 px-2 mb-4">
+                                {/* {
+                                      images.image3 ?
+                                      <img
+                                        src={images?.image3}
+                                        alt={`Preview `}
+                                        className="w-full h-auto rounded-lg shadow-md"
+                                      /> : ''
+                                    } */}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={handleSubmit}
+                            disabled={isLoader}
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline mt-6"
+                            style={{ backgroundColor: "#BF3131" }}
+                          >
+                            {isLoader && (
+                              <span className="loading loading-spinner loading-md text-center"></span>
+                            )}
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : showModal.Place_Order ? (
+                  <>
+                    <div className="container mx-auto mt-10">
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="flex flex-col items-center">
+                          <h2 className="text-3xl font-bold mb-4">Slabs</h2>
+                          {[1, 2, 3, 4, 5].map((slabNumber) => (
+                            <div
+                              key={`slab-${slabNumber}`}
+                              className="flex items-center mb-2"
+                            >
+                              <span className="mr-2">Slab {slabNumber}</span>                              
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <h2 className="text-3xl font-bold mb-4">Boards</h2>
+                          <span className="mr-2 mb-2">500</span>
+                          <span className="mr-2 mb-2">1100</span>
+                          <span className="mr-2 mb-2">2100</span>
+                          <span className="mr-2 mb-2">5100</span>
+                          <span className="mr-2">11000</span>
+                        </div>
+                        <div className="flex flex-col items-center mt-[3rem]">                          
+                          {[1, 2, 3, 4, 5].map((boardNumber) => (
+                            <div
+                              key={`board-${boardNumber}`}
+                              className="flex items-center mb-2"
+                            >
+                              <span className="mr-2 mb-[1px]">Board {boardNumber}</span>
+                              <input
+                                type="radio"
+                                id={`board-${boardNumber}`}
+                                name="selectedBoard"
+                                checked={selectedBoard === boardNumber}
+                                onChange={() => handleBoardSelect(boardNumber)}
+                                className="form-radio text-red-500"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {modalOpen && (
+                        <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+                          <div className="bg-white p-8 rounded-lg shadow-md">
+                            <h2 className="text-2xl font-bold mb-4">
+                              Terms and Conditions
+                            </h2>
+                            <p className="mb-4">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing
+                              elit.
+                            </p>
+                            <label className="inline-flex items-center mb-4">
+                              <input
+                                type="checkbox"
+                                checked={agreeTerms}
+                                onChange={() => setAgreeTerms(!agreeTerms)}
+                                className="form-checkbox text-red-500"
+                              />
+                              <span className="ml-2">
+                                I agree to the terms and conditions
+                              </span>
+                            </label>
+                            <div className="flex justify-between">
+                              <button
+                                onClick={handleAgreeTerms}
+                                disabled={!agreeTerms}
+                                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
+                              >
+                                I Agree
+                              </button>
+                              <button
+                                onClick={handleCloseModal}
+                                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
                 ) : (
                   ""
                 )}
@@ -359,6 +761,9 @@ const Home = () => {
     Flight_Ticket: false,
     Help_Desk: false,
     E_catalogue: false,
+    Place_Order: false,
+    Offers: false,
+    feedback: false,
   });
 
   const modalhandler = (item) => {
@@ -450,6 +855,16 @@ const Home = () => {
           </button>
         </div>
         <div className="flex w-screen gap-[1.5rem] p-3 mt-2">
+          {
+            isAfterFeb13 ? 
+          <button
+            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
+            onClick={() => modalhandler("feedback")}
+          >
+            <VscFeedback className="text-[2.5rem]" />
+            Feedback
+          </button> : ''
+          }
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("Help_Desk")}
@@ -457,44 +872,34 @@ const Home = () => {
             <BiSupport className="text-3xl" />
             Help Desk
           </button>
-          {/* <button
-            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler('')}
-          >
-            <SlEvent className="text-3xl" />
-            FAQ
-          </button> */}
-          {/* <a
+          {
+            isAfterFeb13 ?
+          <a
             href={"/Brochure.pdf"}
             download="your-pdf-file.pdf"
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
           >
             <GrCatalog className="text-3xl" />
             E-catalog
-          </a> */}
+          </a> : ''
+          }
         </div>
         {/* <div className="flex w-screen justify-between px-3 mt-2">
-          <button
+        <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler("Itinerary")}
+            onClick={() => modalhandler("Offers")}
           >
             <BiSolidOffer className="text-[2.5rem]" />
             Offers
           </button>
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler("QR_Code")}
+            onClick={() => modalhandler("Place_Order")}
           >
             <TbReorder className="text-[2.5rem]" />
             Ordering
           </button>
-          <button
-            className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
-            onClick={() => modalhandler("Flight_Ticket")}
-          >
-            <VscFeedback className="text-[2.5rem]" />
-            Feedback
-          </button>
+          
         </div> */}
       </div>
     </div>

@@ -1,9 +1,10 @@
 "use client"
 
-import {useState,useEffect} from "react"
+import {useState,useEffect,useRef} from "react"
 import { getUsers } from "@/app/server";
 import { Scan } from "lucide-react";
 import Link from "next/link";
+import { useDownloadExcel } from 'react-export-table-to-excel';
 import { cache } from "react";
 import UploadFlightTicket from "../UploadFlightTicket";
 import PDFViewer from "../PDFViewer";
@@ -11,6 +12,13 @@ import PDFViewer from "../PDFViewer";
 
 const Page =  () => {
   const [users, setUsers] = useState([]);
+  const tableRef = useRef(null);
+
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: 'Users table',
+    sheet: 'Users'
+})
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -35,11 +43,13 @@ const Page =  () => {
               <Scan /> Scan QR at Event
             </button>
           </Link>
+
+          <button onClick={onDownload} className="btn btn-outline"> Export excel </button>
         </div>
       </header>
       <div className="mt-4">
         <div className="overflow-x-auto">
-          <table className="table">
+          <table className="table" ref={tableRef}>
             {/* head */}
             <thead>
               <tr>
@@ -52,6 +62,8 @@ const Page =  () => {
                 <th>Hotel</th>
                 <th>Event</th>
                 <th>Flight Ticket</th>
+                <th className="hidden">aadhar back</th>
+                <th className="hidden">aadhar front</th>
               </tr>
             </thead>
             <tbody>
@@ -86,6 +98,8 @@ const Page =  () => {
                       <UploadFlightTicket id={user?._id} />
                     </div>
                   </td>
+                  <td className="hidden">{user.aadhaar_back}</td>  
+                  <td className="hidden">{user.aadhaar_front}</td>  
                 </tr>
               ))}
             </tbody>

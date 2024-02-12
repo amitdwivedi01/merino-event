@@ -2,6 +2,7 @@
 import dbConnect from "@/config/db";
 import User from "@/modal/user";
 import Otp from "@/modal/otp";
+import Feedback from "@/modal/feedback"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TwilioSDK from "twilio";
@@ -484,10 +485,67 @@ export const getUserById = async (prevState, id) => {
 export const getUsers = async () => {
   try {
     // Increase the timeout value if necessary
-    const users = await User.find().select('name email tshirt meal mobile _id eventCheckedIn hotelCheckedIn');
+    const users = await User.find().select('name email tshirt meal mobile _id eventCheckedIn hotelCheckedIn aadhaar_back aadhaar_front');
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
+  }
+}
+/**@param {FormData} formData */
+export const addFeedback = async (formData) => {
+  try{
+    const data = Object.fromEntries(formData);
+    const newFeedback = new Feedback({
+      Rating: data.Rating,
+      Review: data.Review,
+      image1: data.image1,
+      image2: data.image2,
+      image3: data.image3,
+      mobile: data.mobile,
+      email: data.email,
+      email: data.email,
+      id: data.id, 
+    });
+
+    // Save the feedback to the database
+    const savedFeedback = await newFeedback.save();
+    const response = {
+      success: true,
+      message: "Your Feedback is added, Thank You!",
+    }
+    return response;
+  }catch(e){
+    console.error("Error Adding Feedback", e)
+    return {
+      success: false,
+      message: "Please Try Again, some error is occured",
+    };
+  }
+}
+
+/**@param {FormData} formData */
+export const addOrder = async (formData) => {
+  try{
+    const data = Object.fromEntries(formData);
+    const order = {
+      order: data.Order
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      data?.id,
+      order,
+      { new: true }
+    );
+
+    return {
+      success: true,
+      message: "Your Order is successfully Placed!"
+    }    
+  }catch(e){
+    console.error("Error Adding Feedback", e)
+    return {
+      success: false,
+      message: "Please Try Again, some error is occured",
+    };
   }
 }
