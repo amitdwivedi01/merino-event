@@ -2,7 +2,7 @@
 import dbConnect from "@/config/db";
 import User from "@/modal/user";
 import Otp from "@/modal/otp";
-import Feedback from "@/modal/feedback"
+import Feedback from "@/modal/feedback";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TwilioSDK from "twilio";
@@ -11,7 +11,6 @@ import nodemailer from "nodemailer";
 import { clearCookie } from "../../utils/commonUtils";
 import { revalidatePath } from "next/cache";
 import { v2 as cloudinary } from "cloudinary";
-
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -25,7 +24,7 @@ const base_url = process.env.BASE_URL;
 const admin_mobile = process.env.ADMIN_MOBILE;
 const expiredInTime = 60 * 10;
 
-const client = TwilioSDK(accountSid, authToken);
+// const client = TwilioSDK(accountSid, authToken);
 
 export const verifyOTP = async ({ mobile, otpCode }) => {
   await dbConnect();
@@ -64,17 +63,18 @@ const getOTP = async ({ mobile }) => {
 
 const sendOTP = async ({ mobile }) => {
   const otp = await getOTP({ mobile });
-  const body = ` Your Key for verification is: ${otp}. Please use it to verify your Merino Fabwood account. Thank you.`;
-  await client.messages.create({
-    from: process.env.ADMIN_SMS_MOBILE,
-    to: "+91" + mobile,
-    body,
-  });
-  await client.messages.create({
-    from: `whatsapp:${process.env.ADMIN_WHATSAPP_MOBILE}`,
-    to: `whatsapp:+91${mobile}`,
-    body,
-  });
+  return otp;
+  // const body = ` Your Key for verification is: ${otp}. Please use it to verify your Merino Fabwood account. Thank you.`;
+  // await client.messages.create({
+  //   from: process.env.ADMIN_SMS_MOBILE,
+  //   to: "+91" + mobile,
+  //   body,
+  // });
+  // await client.messages.create({
+  //   from: `whatsapp:${process.env.ADMIN_WHATSAPP_MOBILE}`,
+  //   to: `whatsapp:+91${mobile}`,
+  //   body,
+  // });
 };
 
 const sendMessage = async ({ to, mediaUrl }) => {
@@ -141,11 +141,11 @@ export async function sendOTPToUser(prevState, formData) {
         user: existingUser,
       };
     } else if (existingUser) {
-      await sendOTP({ mobile: user?.mobile });
+      const otp = await sendOTP({ mobile: user?.mobile });
 
       return {
         success: true,
-        message: `OTP sent to your mobile number`,
+        message: `OTP is ${otp}`,
         user: user,
       };
     }
@@ -285,10 +285,12 @@ export async function updateUserDocuments(prevState, formData) {
 
 export async function login(prevState, formData) {
   const user = Object.fromEntries(formData);
+
+  console.log(user);
   try {
     await dbConnect();
     const existingUser = await User.findOne({ mobile: user?.mobile });
-    console.log(existingUser);
+    console.log("user", existingUser);
 
     if (existingUser) {
       cookies().set("user", existingUser._id);
@@ -386,7 +388,7 @@ export const updateHotelAndEventCheckInStatus = async (prevData, data) => {
     const { user, type } = data;
     await dbConnect();
     const existingUser = await User.findById(user?.id);
-    console.log(existingUser,"user")
+    console.log(existingUser, "user");
     if (existingUser) {
       if (existingUser[type]) {
         return {
@@ -448,7 +450,7 @@ export const uploadFlightTicket = async (prevState, inputData) => {
       await sendEmail({
         to: user.email,
         subject: "Flight Tickets Booking Confirmation",
-        body:`
+        body: `
         <p>Dear Sir/Madam,</p>
         <p>Your flight tickets have been successfully booked.</p>
         <p>Please login to our website to review your flights: <a href="https://merinofabwood.vercel.app/login">Review Flights</a></p>
@@ -473,10 +475,10 @@ export const uploadFlightTicket = async (prevState, inputData) => {
 };
 /**@param {FormData} formData */
 export const getUserById = async (prevState, id) => {
-  try {   
+  try {
     await dbConnect();
     const user = await User.findById(id);
-    console.log(user,"user")
+    console.log(user, "user");
     return user;
   } catch (error) {
     console.log({ error });
@@ -485,16 +487,18 @@ export const getUserById = async (prevState, id) => {
 export const getUsers = async () => {
   try {
     // Increase the timeout value if necessary
-    const users = await User.find().select('name email tshirt meal mobile _id eventCheckedIn hotelCheckedIn aadhaar_back aadhaar_front');
+    const users = await User.find().select(
+      "name email tshirt meal mobile _id eventCheckedIn hotelCheckedIn aadhaar_back aadhaar_front"
+    );
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
   }
-}
+};
 /**@param {FormData} formData */
 export const addFeedback = async (formData) => {
-  try{
+  try {
     const data = Object.fromEntries(formData);
     const newFeedback = new Feedback({
       Rating: data.Rating,
@@ -505,7 +509,7 @@ export const addFeedback = async (formData) => {
       mobile: data.mobile,
       email: data.email,
       email: data.email,
-      id: data.id, 
+      id: data.id,
     });
 
     // Save the feedback to the database
@@ -513,39 +517,37 @@ export const addFeedback = async (formData) => {
     const response = {
       success: true,
       message: "Your Feedback is added, Thank You!",
-    }
+    };
     return response;
-  }catch(e){
-    console.error("Error Adding Feedback", e)
+  } catch (e) {
+    console.error("Error Adding Feedback", e);
     return {
       success: false,
       message: "Please Try Again, some error is occured",
     };
   }
-}
+};
 
 /**@param {FormData} formData */
 export const addOrder = async (formData) => {
-  try{
+  try {
     const data = Object.fromEntries(formData);
     const order = {
-      order: data.Order
-    }
-    const updatedUser = await User.findByIdAndUpdate(
-      data?.id,
-      order,
-      { new: true }
-    );
+      order: data.Order,
+    };
+    const updatedUser = await User.findByIdAndUpdate(data?.id, order, {
+      new: true,
+    });
 
     return {
       success: true,
-      message: "Your Order is successfully Placed!"
-    }    
-  }catch(e){
-    console.error("Error Adding Feedback", e)
+      message: "Your Order is successfully Placed!",
+    };
+  } catch (e) {
+    console.error("Error Adding Feedback", e);
     return {
       success: false,
       message: "Please Try Again, some error is occured",
     };
   }
-}
+};

@@ -1,50 +1,50 @@
-'use client';
+"use client";
 
-import { useRef, useState, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
-import { useSearchParams } from 'next/navigation';
-import { sendOTPToUser, verifyUserOTP } from '../../server';
-import OtpInput from 'react-otp-input';
+import { useRef, useState, useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
+import { sendOTPToUser, verifyUserOTP } from "../../server";
+import OtpInput from "react-otp-input";
 // import { login } from '../../server';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
 const Login = () => {
   const [state, formAction] = useFormState(sendOTPToUser);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const router = useRouter();
   const mobileRef = useRef(null);
   const Router = useRouter();
 
-  useEffect(()=>{
-      if(typeof window !== 'undefined'){
-       let userID = window.localStorage.getItem('user');
-        userID = JSON.parse(userID);
-        console.log(userID)
-        if (userID?._id) {
-         Router.push('/');
-       }
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let userID = window.localStorage.getItem("user");
+      userID = JSON.parse(userID);
+      console.log(userID);
+      if (userID?._id) {
+        Router.push("/");
       }
-  },[])
+    }
+  }, []);
 
-  if (state?.message === 'user') {
-    if (typeof window !== 'undefined') {
+  if (state?.message === "user") {
+    if (typeof window !== "undefined") {
       try {
-        localStorage.setItem('user', JSON.stringify(state?.user));
-        router.push('/');
+        localStorage.setItem("user", JSON.stringify(state?.user));
+        router.push("/");
       } catch (error) {
-        console.log('Error while changing route to home: ', error);
+        console.log("Error while changing route to home: ", error);
       }
     }
   }
-  if (state?.success && state?.message === 'find') {
-    if (typeof window !== 'undefined') {
+  if (state?.success && state?.message === "find") {
+    if (typeof window !== "undefined") {
       try {
-        localStorage.setItem('user', JSON.stringify(state?.data));
-        router.push('/sign-up');
+        localStorage.setItem("user", JSON.stringify(state?.data));
+        router.push("/sign-up");
       } catch (error) {
-        console.log('Error while changing user to signup:- ', error);
+        console.log("Error while changing user to signup:- ", error);
       }
     }
   }
@@ -65,10 +65,14 @@ const Login = () => {
       <article className="card bg-white shadow-lg border border-gray-200 rounded-lg">
         <form action={formAction} className="card-body">
           <div className="relative max-w-sm mx-auto h-[60px] mb-10">
-            <img className='h-[80px] w-[220px]' src='/images/FABWood-logo.png' alt='logo' />
+            <img
+              className="h-[80px] w-[220px]"
+              src="/images/FABWood-logo.png"
+              alt="logo"
+            />
             {/* <Image className='' fill src="/images/FABWood-logo.png" alt="image" /> */}
           </div>
-          <div className={state?.success && 'hidden'}>
+          <div className={state?.success && "hidden"}>
             <label className="form-control w-full">
               <div className="label">
                 <span className="label-text ">
@@ -88,7 +92,7 @@ const Login = () => {
               <SendOTPButton />
             </footer>
           </div>
-          <div className={` ${state?.success ? 'block' : 'hidden'}`}>
+          <div className={` ${state?.success ? "block" : "hidden"}`}>
             <div className="flex items-center justify-center flex-col gap-10 rounded-lg">
               <h1 className="text-2xl font-medium">Enter Verification Code</h1>
               <OtpInput
@@ -97,12 +101,12 @@ const Login = () => {
                 numInputs={4}
                 shouldAutoFocus={state?.success}
                 inputStyle={{
-                  height: '3rem',
-                  width: '3rem',
-                  margin: '0 1rem',
-                  fontSize: '2rem',
-                  borderRadius: '4px',
-                  border: '1px solid rgba(0,0,0)'
+                  height: "3rem",
+                  width: "3rem",
+                  margin: "0 1rem",
+                  fontSize: "2rem",
+                  borderRadius: "4px",
+                  border: "1px solid rgba(0,0,0)",
                 }}
                 renderInput={(props) => <input {...props} />}
               />
@@ -141,7 +145,7 @@ const VerifyOTPButton = ({ user, otp }) => {
       const result = await verifyUserOTP(user, otp);
       setVerificationResult(result);
     } catch (error) {
-      console.error('Error verifying OTP:', error);
+      console.error("Error verifying OTP:", error);
     } finally {
       setPending(false);
     }
@@ -152,10 +156,10 @@ const VerifyOTPButton = ({ user, otp }) => {
       verificationResult &&
       verificationResult.success &&
       verificationResult &&
-      typeof window !== 'undefined'
+      typeof window !== "undefined"
     ) {
-      localStorage.setItem('user', JSON.stringify(verificationResult));
-      router.push('/sign-up');
+      localStorage.setItem("user", JSON.stringify(verificationResult));
+      router.push("/sign-up");
     }
   }, [verificationResult]);
 

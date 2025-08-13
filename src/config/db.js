@@ -11,7 +11,6 @@ if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-console.log({ MONGODB_URI });
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -34,6 +33,7 @@ async function dbConnect() {
       useUnifiedTopology: true,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("MongoDB connected");
       return mongoose;
     });
   }

@@ -55,7 +55,6 @@ if (typeof window !== "undefined") {
   }
 }
 
-
 const roleBaseTime = {
   oem: {
     day1: "Day 1, 12th Feb, 2024",
@@ -262,26 +261,21 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
     setModalOpen(true);
   };
 
-  const handleAgreeTerms = async() => {
+  const handleAgreeTerms = async () => {
     setAgreeTerms(true);
     const formData = new FormData();
-    formData.append("Order", selectedBoard)
-    formData.append("id", userState._id)
+    formData.append("Order", selectedBoard);
+    formData.append("id", userState._id);
     const response = await addOrder(formData);
-    if(response.success){
-      toast.success(
-        "Thank you. Your Order is Placed.",
-        {
-          duration: 4000,
-        }
-      );
-    }else{
-        toast.error("Please Try Again, Some error occurred!",
-          {
-            duration:4000,
-          }
-        );
-      }
+    if (response.success) {
+      toast.success("Thank you. Your Order is Placed.", {
+        duration: 4000,
+      });
+    } else {
+      toast.error("Please Try Again, Some error occurred!", {
+        duration: 4000,
+      });
+    }
     setModalOpen(false);
   };
 
@@ -657,7 +651,7 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                               key={`slab-${slabNumber}`}
                               className="flex items-center mb-2"
                             >
-                              <span className="mr-2">Slab {slabNumber}</span>                              
+                              <span className="mr-2">Slab {slabNumber}</span>
                             </div>
                           ))}
                         </div>
@@ -669,13 +663,15 @@ const Modal = ({ isOpen, toggleModal, showModal }) => {
                           <span className="mr-2 mb-2">5100</span>
                           <span className="mr-2">11000</span>
                         </div>
-                        <div className="flex flex-col items-center mt-[3rem]">                          
+                        <div className="flex flex-col items-center mt-[3rem]">
                           {[1, 2, 3, 4, 5].map((boardNumber) => (
                             <div
                               key={`board-${boardNumber}`}
                               className="flex items-center mb-2"
                             >
-                              <span className="mr-2 mb-[1px]">Board {boardNumber}</span>
+                              <span className="mr-2 mb-[1px]">
+                                Board {boardNumber}
+                              </span>
                               <input
                                 type="radio"
                                 id={`board-${boardNumber}`}
@@ -745,7 +741,7 @@ const Home = () => {
   const Router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const [isOpen, setisOpen] = useState(false);
-  const [isAfterFeb13, setIsAfterFeb13] = useState(false)
+  const [isAfterFeb13, setIsAfterFeb13] = useState(false);
   const [showModal, setShowModal] = useState({
     Itinerary: false,
     QR_Code: false,
@@ -757,25 +753,26 @@ const Home = () => {
     feedback: false,
   });
 
-  useEffect(()=>{
-    const brochureRender = ()=>{
-      const currentDate = new Date();      
+  useEffect(() => {
+    const brochureRender = () => {
+      const currentDate = new Date();
       // Extract the day and month from the current date
       const currentDay = currentDate.getDate();
       const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month
-      
+
       // Check if the current date is 13th of February or later
-      const date = currentMonth === 2 && currentDay >= +user?.eventEndDate.slice(0,2);
-      console.log(date,"date")
-      if(date){
-        setIsAfterFeb13(true)
-      }else{
-        setIsAfterFeb13(false)
+      const date =
+        currentMonth === 2 && currentDay >= +user?.eventEndDate.slice(0, 2);
+      console.log(date, "date");
+      if (date) {
+        setIsAfterFeb13(true);
+      } else {
+        setIsAfterFeb13(false);
       }
-    }
+    };
 
     brochureRender();
-  },[])
+  }, []);
 
   const modalhandler = (item) => {
     setisOpen(true);
@@ -818,7 +815,7 @@ const Home = () => {
             <div>
               <div class="flex flex-col items-center py-5 shadow mb-3 bg-gray-100 rounded-lg">
                 <div className="flex gap-2 justify-center items-center">
-                  <LuUserCircle2 className="text-[35px] text-gray-700" />
+                  {/* <LuUserCircle2 className="text-[35px] text-gray-700" /> */}
                   <h1 className="text-xl">Profile Details</h1>
                 </div>
                 <h5 class="mb-1 text-xl font-medium text-gray-900">
@@ -866,16 +863,14 @@ const Home = () => {
           </button>
         </div>
         <div className="flex w-screen gap-[1.5rem] p-3 mt-2">
-          {/* {
-            isAfterFeb13 ? 
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("feedback")}
           >
             <VscFeedback className="text-[2.5rem]" />
             Feedback
-          </button> : ('')
-          } */}
+          </button>
+
           <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("Help_Desk")}
@@ -883,8 +878,7 @@ const Home = () => {
             <BiSupport className="text-3xl" />
             Help Desk
           </button>
-          {
-            isAfterFeb13 ? (
+
           <a
             href={"/Merino FABWood.pdf"}
             download="Merino Fabwood Brochure.pdf"
@@ -892,11 +886,10 @@ const Home = () => {
           >
             <GrCatalog className="text-3xl" />
             E-catalog
-          </a> ) : ('')
-          }
+          </a>
         </div>
-        {/* <div className="flex w-screen justify-between px-3 mt-2">
-        <button
+        <div className="flex w-screen justify-between px-3 mt-2">
+          <button
             className="w-[30%] max-w-[120px] bg-white py-4 px-3 shadow-xl rounded-md text-[#BF3131] flex flex-col gap-4 items-center justify-center font-semibold hover:bg-red-400 hover:text-white transition duration-300 ease-in-out"
             onClick={() => modalhandler("Offers")}
           >
@@ -910,8 +903,7 @@ const Home = () => {
             <TbReorder className="text-[2.5rem]" />
             Ordering
           </button>
-          
-        </div> */}
+        </div>
       </div>
     </div>
   );
